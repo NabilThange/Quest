@@ -44,6 +44,7 @@ export default function Auth9({ initialMode = 'login' }: Auth9Props) {
   const [password, setPassword] = useState('');
   const [agreeTerms, setAgreeTerms] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -77,6 +78,7 @@ export default function Auth9({ initialMode = 'login' }: Auth9Props) {
     }
 
     setLoading(true);
+    setNotice(null);
     const supabase = createClient();
 
     try {
@@ -94,7 +96,7 @@ export default function Auth9({ initialMode = 'login' }: Auth9Props) {
         }
 
         const username = name.trim() || email.split('@')[0];
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -105,6 +107,14 @@ export default function Auth9({ initialMode = 'login' }: Auth9Props) {
         if (error) {
           toast.error(error.message);
           setLoading(false);
+          return;
+        }
+
+        if (!data?.session) {
+          setMode('login');
+          setPassword('');
+          setNotice('Check your email. We sent you a confirmation link — click it to finish registering, then log in here.');
+          toast.success('Check your email for a confirmation link, then log in.', { duration: 8000 });
           return;
         }
 
@@ -192,6 +202,17 @@ export default function Auth9({ initialMode = 'login' }: Auth9Props) {
                 : 'Sign in to continue your daily quests'}
             </p>
           </motion.div>
+
+          {/* Email Confirmation Notice */}
+          {notice && (
+            <motion.div
+              variants={itemVariants}
+              className="mb-6 rounded-lg border border-blue-200 bg-blue-50/80 p-4 text-sm leading-relaxed text-blue-950"
+            >
+              <div className="font-medium">Almost there!</div>
+              <p className="mt-1 text-blue-900">{notice}</p>
+            </motion.div>
+          )}
 
           {/* Google Login Button */}
           <motion.div variants={itemVariants} className="mb-6">
@@ -328,7 +349,10 @@ export default function Auth9({ initialMode = 'login' }: Auth9Props) {
                 Already have an account?{' '}
                 <button
                   type="button"
-                  onClick={() => setMode('login')}
+                  onClick={() => {
+                    setMode('login');
+                    setNotice(null);
+                  }}
                   className="font-semibold text-neutral-900 hover:underline cursor-pointer"
                 >
                   Log in
@@ -339,7 +363,10 @@ export default function Auth9({ initialMode = 'login' }: Auth9Props) {
                 Don&apos;t have an account?{' '}
                 <button
                   type="button"
-                  onClick={() => setMode('signup')}
+                  onClick={() => {
+                    setMode('signup');
+                    setNotice(null);
+                  }}
                   className="font-semibold text-neutral-900 hover:underline cursor-pointer"
                 >
                   Sign up

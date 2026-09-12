@@ -46,7 +46,8 @@ Chronological Order (Top to Bottom):
      - `Team` (`/app/team`)
      - `Pokédex` (`/app/pokedex`)
    - **Overview**:
-     - `Calendar` (`/app/calendar`)
+     - `Calendar` (`/app/ca
+     lendar`)
      - `Shop` (`/app/rewards`)
      - `Leaderboard` (`/app/leaderboard`)
      - `Profile` (`/app/profile`)

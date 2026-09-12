@@ -254,26 +254,26 @@ export default function QuestLandingPage() {
             {/* Avatar Row */}
             <motion.div
               {...fadeUp(0.1)}
-              className="inline-flex items-center gap-3 mb-6"
+              className="inline-flex items-center gap-3 mb-6 px-4 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/15 shadow-xl"
             >
               <div className="flex -space-x-2">
                 <img
                   src="/avatar-1.png"
                   alt="Adventurer 1"
-                  className="w-8 h-8 rounded-full border-2 border-background object-cover"
+                  className="w-7 h-7 rounded-full border-2 border-background object-cover"
                 />
                 <img
                   src="/avatar-2.png"
                   alt="Adventurer 2"
-                  className="w-8 h-8 rounded-full border-2 border-background object-cover"
+                  className="w-7 h-7 rounded-full border-2 border-background object-cover"
                 />
                 <img
                   src="/avatar-3.png"
                   alt="Adventurer 3"
-                  className="w-8 h-8 rounded-full border-2 border-background object-cover"
+                  className="w-7 h-7 rounded-full border-2 border-background object-cover"
                 />
               </div>
-              <span className="text-muted-foreground text-sm font-normal">
+              <span className="text-zinc-200 text-xs sm:text-sm font-medium tracking-wide">
                 Build consistency, one quest at a time
               </span>
             </motion.div>

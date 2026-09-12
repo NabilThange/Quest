@@ -11,7 +11,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
-*Built for the **Mumbai University Web Hackathon** — Track: **Life RPG***
+*Built for the **Web Hackathon** — Track: **Life RPG***
 
 [**🌐 Explore Live App**](https://doquest.vercel.app) • [**📖 Read the Blog**](https://doquest.vercel.app/blog) • [**🤖 AI Summary (llms.txt)**](https://doquest.vercel.app/llms.txt)
 

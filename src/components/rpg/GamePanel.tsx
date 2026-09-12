@@ -86,7 +86,7 @@ export function GamePanel({ initial, view }: { initial: GameState; view: GameVie
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="space-y-6 pb-24 lg:pb-0">
+      <div className={`space-y-6 ${view === 'lodge' || view === 'shop' ? '' : 'pb-24 lg:pb-0'}`}>
         <header className="flex flex-wrap items-start justify-between gap-4">
           <div><p className="mb-2 text-xs uppercase tracking-[0.22em] text-text-secondary">{titles[view][1]}</p>
             <h1 className="font-serif text-3xl sm:text-4xl leading-tight">{titles[view][0]}</h1></div>

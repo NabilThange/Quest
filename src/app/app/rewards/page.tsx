@@ -21,7 +21,7 @@ export default async function RewardsPage() {
       <GameSection view="shop" />
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Rewards Shop</h1>
+          <h2 className="text-2xl font-serif">Little rewards for the journey</h2>
           <p className="text-text-secondary mt-1">Spend your hard-earned currency on cosmetics and badges.</p>
         </div>
         <div className="card flex items-center gap-2 px-4 py-2">

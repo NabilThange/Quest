@@ -17,7 +17,7 @@ export function CreatureSprite({ species, silhouette = false, size = 'large' }: 
   const [failed, setFailed] = useState<string | null>(null);
   const label = silhouette ? 'Unidentified creature silhouette' : species.name;
   return (
-    <div className={`creature-sprite ${size === 'large' ? 'h-28 w-28 sm:h-36 sm:w-36' : 'h-16 w-16'} ${silhouette ? 'bg-secondary text-muted-foreground' : colors[species.elemental_type]}`}>
+    <div className={`creature-sprite ${size === 'large' ? 'h-24 w-24 sm:h-36 sm:w-36' : 'h-16 w-16'} ${silhouette ? 'bg-secondary text-muted-foreground' : colors[species.elemental_type]}`}>
       {species.sprite_url && failed !== species.sprite_url ? (
         // URLs are catalog data; native images allow later art swaps without Next host configuration.
         // eslint-disable-next-line @next/next/no-img-element

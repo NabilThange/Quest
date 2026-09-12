@@ -22,6 +22,10 @@ begin
  insert into auth.users(id,email,raw_user_meta_data) values
   (actor, actor::text || '@example.invalid',jsonb_build_object('username','test_' || actor::text)),
   (outsider, outsider::text || '@example.invalid',jsonb_build_object('username','test_' || outsider::text));
+ -- Give the outsider real game rows so the isolation assertions are not vacuous.
+ perform set_config('request.jwt.claim.sub',outsider::text,true);
+ perform set_config('request.jwt.claims',jsonb_build_object('sub',outsider,'role','authenticated')::text,true);
+ perform public.life_rpg('choose',p_species => 2);
  perform set_config('request.jwt.claim.sub',actor::text,true);
  perform set_config('request.jwt.claims',jsonb_build_object('sub',actor,'role','authenticated')::text,true);
  perform set_config('test.rpg_actor',actor::text,true);

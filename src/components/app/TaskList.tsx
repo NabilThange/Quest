@@ -11,8 +11,8 @@ import { Trash2, CheckCircle2, Circle, Flame, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { playQuestCompleteSound, playCoinSound, playLevelUpSound } from '@/lib/sound';
-import { CardDraftModal } from '@/components/rpg/CardDraftModal';
-import { generateCardDraft, type AttackCardDef } from '@/lib/rpg/cardCatalog';
+import { generateCardDraft } from '@/lib/rpg/cardCatalog';
+import { triggerCardDraft } from '@/lib/rpg/cardEvents';
 
 interface TaskListProps { tasks: Task[]; emptyMessage?: string }
 
@@ -24,12 +24,6 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
   const [editing, setEditing] = useState<Task | null>(null);
   const [today, setToday] = useState<string | null>(null);
   const [levelUp, setLevelUp] = useState({ show: false, level: 1 });
-  const [draftState, setDraftState] = useState<{
-    isOpen: boolean;
-    cards: AttackCardDef[];
-    taskTitle: string;
-    taskAttribute?: string | null;
-  } | null>(null);
 
   useEffect(() => {
     const update = () => setToday(new Date().toISOString().slice(0, 10));
@@ -58,31 +52,19 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
         }
         if (result.leveledUp) setLevelUp({ show: true, level: result.newLevel ?? 1 });
 
-        // Generate 3 card draft options biased by task attribute
+        // Generate 3 card draft options biased by task attribute and trigger top-level modal
         const draftedCards = generateCardDraft({
           taskAttribute: task.attribute,
         });
-        setDraftState({
-          isOpen: true,
+        triggerCardDraft({
           cards: draftedCards,
           taskTitle: task.title,
           taskAttribute: task.attribute,
         });
-
-        router.refresh();
       }
     } catch {
       toast.error('Connection interrupted. Refresh to check whether your reward was saved.');
     } finally { lock.current = false; setPending(null); }
-  }
-
-  function handleCardClaim(card: AttackCardDef) {
-    toast.success(`Acquired: ${card.name} (${card.element}) added to your Battle Deck!`, {
-      icon: card.icon,
-      duration: 4000,
-    });
-    setDraftState(null);
-    router.refresh();
   }
 
   async function handleDelete(taskId: string) {
@@ -115,59 +97,55 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
     finally { lock.current = false; setPending(null); }
   }
 
-  if (tasks.length === 0) return <div className="card text-center py-10 text-text-muted"><p className="text-3xl mb-3" aria-hidden="true">❧</p><p>{emptyMessage}</p></div>;
-
-  return <MotionConfig reducedMotion="user">
-    <LevelUpModal show={levelUp.show} level={levelUp.level} onClose={() => setLevelUp({ show: false, level: 1 })} />
-    <ul className="space-y-3">
-      <AnimatePresence initial={false}>
-        {tasks.map(task => {
-          const earnedToday = today !== null && task.last_rewarded_at?.slice(0, 10) === today;
-          const done = task.type === 'todo' ? task.is_completed : earnedToday;
-          return <motion.li key={task.id} layout initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }}>
-            <div className="card">
-              {editing?.id === task.id ? <form onSubmit={saveEdit} className="space-y-3">
-                <label className="label">Quest title<input name="title" className="input mt-1" defaultValue={task.title} maxLength={200} required autoFocus /></label>
-                <div className="grid sm:grid-cols-3 gap-3">
-                  <label className="label">Difficulty<select name="difficulty" className="input mt-1" defaultValue={task.difficulty}>{['easy','medium','hard'].map(v => <option key={v}>{v}</option>)}</select></label>
-                  <label className="label">Attribute<select name="attribute" className="input mt-1" defaultValue={task.attribute ?? ''}><option value="">Energy / uncategorized</option>{Object.keys(ATTRIBUTE_COLORS).map(v => <option key={v}>{v}</option>)}</select></label>
-                  <label className="label">Due date<input type="date" name="due_date" className="input mt-1" defaultValue={task.due_date ?? ''} /></label>
+  return (
+    <MotionConfig reducedMotion="user">
+      <LevelUpModal show={levelUp.show} level={levelUp.level} onClose={() => setLevelUp({ show: false, level: 1 })} />
+      {tasks.length === 0 ? (
+        <div className="card text-center py-10 text-text-muted">
+          <p className="text-3xl mb-3" aria-hidden="true">❧</p>
+          <p>{emptyMessage}</p>
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          <AnimatePresence initial={false}>
+            {tasks.map(task => {
+              const earnedToday = today !== null && task.last_rewarded_at?.slice(0, 10) === today;
+              const done = task.type === 'todo' ? task.is_completed : earnedToday;
+              return <motion.li key={task.id} layout initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }}>
+                <div className="card">
+                  {editing?.id === task.id ? <form onSubmit={saveEdit} className="space-y-3">
+                    <label className="label">Quest title<input name="title" className="input mt-1" defaultValue={task.title} maxLength={200} required autoFocus /></label>
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <label className="label">Difficulty<select name="difficulty" className="input mt-1" defaultValue={task.difficulty}>{['easy','medium','hard'].map(v => <option key={v}>{v}</option>)}</select></label>
+                      <label className="label">Attribute<select name="attribute" className="input mt-1" defaultValue={task.attribute ?? ''}><option value="">Energy / uncategorized</option>{Object.keys(ATTRIBUTE_COLORS).map(v => <option key={v}>{v}</option>)}</select></label>
+                      <label className="label">Due date<input type="date" name="due_date" className="input mt-1" defaultValue={task.due_date ?? ''} /></label>
+                    </div>
+                    <div className="flex gap-2"><button className="btn-primary" disabled={pending !== null}>Save</button><button type="button" className="btn-secondary" disabled={pending !== null} onClick={() => setEditing(null)}>Cancel</button></div>
+                  </form> : <div className="flex items-start gap-3">
+                    <button onClick={() => void handleComplete(task)} disabled={pending !== null || done} className="mt-0.5 rounded p-1 text-text-secondary hover:text-primary" aria-label={`${done ? 'Completed' : 'Complete'} ${task.title}`}>
+                      {pending === task.id ? <span className="block w-5 animate-spin" aria-hidden="true">◌</span> : done ? <CheckCircle2 className="h-5 w-5 text-green-400" /> : <Circle className="h-5 w-5" />}
+                    </button>
+                    <div className="min-w-0 flex-1">
+                      <p className={cn('font-medium text-sm', done && 'line-through text-text-secondary')}>{task.title}</p>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        <span className="text-xs px-2 py-0.5 rounded-full border border-border bg-secondary capitalize text-text-secondary">{task.type}</span>
+                        {task.attribute && <span className={cn('text-xs px-2 py-0.5 rounded-full border', ATTRIBUTE_COLORS[task.attribute])}>{task.attribute}</span>}
+                        <span className={cn('text-xs px-2 py-0.5 rounded-full border capitalize', DIFFICULTY_COLORS[task.difficulty])}>{task.difficulty}</span>
+                        {task.type === 'habit' && task.habit_streak > 0 && <span className="flex items-center gap-1 text-xs text-orange-400"><Flame className="h-3 w-3" />{task.habit_streak}</span>}
+                        {task.due_date && <span className="text-xs text-text-secondary">Due {task.due_date}</span>}
+                        {done && task.type !== 'todo' && <span className="text-xs text-text-secondary">Reward earned · resets at midnight UTC</span>}
+                      </div>
+                    </div>
+                    <button onClick={() => setEditing(task)} disabled={pending !== null} className="rounded p-1 text-text-secondary hover:text-primary" aria-label={`Edit ${task.title}`}><Pencil className="h-4 w-4" /></button>
+                    <button onClick={() => void handleDelete(task.id)} disabled={pending !== null} className="rounded p-1 text-text-secondary hover:text-red-400" aria-label={`Delete ${task.title}`}><Trash2 className="h-4 w-4" /></button>
+                  </div>}
+                  <AnimatePresence>{reward?.id === task.id && <motion.p key={reward.text} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} role="status" className="mt-3 rounded-xl bg-secondary px-3 py-2 text-xs font-medium">✦ {reward.text}</motion.p>}</AnimatePresence>
                 </div>
-                <div className="flex gap-2"><button className="btn-primary" disabled={pending !== null}>Save</button><button type="button" className="btn-secondary" disabled={pending !== null} onClick={() => setEditing(null)}>Cancel</button></div>
-              </form> : <div className="flex items-start gap-3">
-                <button onClick={() => void handleComplete(task)} disabled={pending !== null || done} className="mt-0.5 rounded p-1 text-text-secondary hover:text-primary" aria-label={`${done ? 'Completed' : 'Complete'} ${task.title}`}>
-                  {pending === task.id ? <span className="block w-5 animate-spin" aria-hidden="true">◌</span> : done ? <CheckCircle2 className="h-5 w-5 text-green-400" /> : <Circle className="h-5 w-5" />}
-                </button>
-                <div className="min-w-0 flex-1">
-                  <p className={cn('font-medium text-sm', done && 'line-through text-text-secondary')}>{task.title}</p>
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    <span className="text-xs px-2 py-0.5 rounded-full border border-border bg-secondary capitalize text-text-secondary">{task.type}</span>
-                    {task.attribute && <span className={cn('text-xs px-2 py-0.5 rounded-full border', ATTRIBUTE_COLORS[task.attribute])}>{task.attribute}</span>}
-                    <span className={cn('text-xs px-2 py-0.5 rounded-full border capitalize', DIFFICULTY_COLORS[task.difficulty])}>{task.difficulty}</span>
-                    {task.type === 'habit' && task.habit_streak > 0 && <span className="flex items-center gap-1 text-xs text-orange-400"><Flame className="h-3 w-3" />{task.habit_streak}</span>}
-                    {task.due_date && <span className="text-xs text-text-secondary">Due {task.due_date}</span>}
-                    {done && task.type !== 'todo' && <span className="text-xs text-text-secondary">Reward earned · resets at midnight UTC</span>}
-                  </div>
-                </div>
-                <button onClick={() => setEditing(task)} disabled={pending !== null} className="rounded p-1 text-text-secondary hover:text-primary" aria-label={`Edit ${task.title}`}><Pencil className="h-4 w-4" /></button>
-                <button onClick={() => void handleDelete(task.id)} disabled={pending !== null} className="rounded p-1 text-text-secondary hover:text-red-400" aria-label={`Delete ${task.title}`}><Trash2 className="h-4 w-4" /></button>
-              </div>}
-              <AnimatePresence>{reward?.id === task.id && <motion.p key={reward.text} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} role="status" className="mt-3 rounded-xl bg-secondary px-3 py-2 text-xs font-medium">✦ {reward.text}</motion.p>}</AnimatePresence>
-            </div>
-          </motion.li>;
-        })}
-      </AnimatePresence>
-    </ul>
-
-    {draftState && (
-      <CardDraftModal
-        isOpen={draftState.isOpen}
-        cards={draftState.cards}
-        taskTitle={draftState.taskTitle}
-        taskAttribute={draftState.taskAttribute}
-        onSelectCard={handleCardClaim}
-        onClose={() => setDraftState(null)}
-      />
-    )}
-  </MotionConfig>;
+              </motion.li>;
+            })}
+          </AnimatePresence>
+        </ul>
+      )}
+    </MotionConfig>
+  );
 }

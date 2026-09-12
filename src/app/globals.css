@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #0a0a0f;
+    color: #e2e8f0;
+    font-family: var(--font-inter), system-ui, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0f0f1a;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1e1e3a;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2d2d5e;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-bg-card border border-border rounded-xl p-4;
+  }
+
+  .card-elevated {
+    @apply bg-bg-elevated border border-border-bright rounded-xl p-4;
+  }
+
+  .btn-primary {
+    @apply bg-brand-cyan text-bg-primary font-semibold px-4 py-2 rounded-lg
+           hover:bg-cyan-300 active:scale-95 transition-all duration-150
+           focus:outline-none focus:ring-2 focus:ring-brand-cyan focus:ring-offset-2 focus:ring-offset-bg-primary;
+  }
+
+  .btn-secondary {
+    @apply bg-bg-elevated border border-border-bright text-text-primary font-medium px-4 py-2 rounded-lg
+           hover:border-brand-cyan/50 hover:text-brand-cyan active:scale-95 transition-all duration-150
+           focus:outline-none focus:ring-2 focus:ring-brand-cyan focus:ring-offset-2 focus:ring-offset-bg-primary;
+  }
+
+  .btn-danger {
+    @apply bg-red-500/10 border border-red-500/30 text-red-400 font-medium px-4 py-2 rounded-lg
+           hover:bg-red-500/20 active:scale-95 transition-all duration-150
+           focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-bg-primary;
+  }
+
+  .input {
+    @apply bg-bg-elevated border border-border rounded-lg px-3 py-2 text-text-primary
+           placeholder:text-text-muted w-full
+           focus:outline-none focus:ring-2 focus:ring-brand-cyan/50 focus:border-brand-cyan/50
+           transition-colors duration-150;
+  }
+
+  .label {
+    @apply text-sm font-medium text-text-secondary mb-1 block;
+  }
+
+  .glow-cyan {
+    box-shadow: 0 0 20px rgba(0, 245, 255, 0.15), 0 0 40px rgba(0, 245, 255, 0.05);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.2), 0 0 40px rgba(124, 58, 237, 0.1);
+  }
+
+  .skeleton {
+    @apply bg-bg-elevated animate-pulse rounded;
+    background: linear-gradient(
+      90deg,
+      #13131f 25%,
+      #1a1a2e 50%,
+      #13131f 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}
+
+/* Cyberpunk grid background */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* XP bar animation */
+.xp-bar-fill {
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Neon text effect */
+.neon-text {
+  text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}

@@ -191,7 +191,7 @@ declare
  today date := (now() at time zone 'UTC')::date;
  reward jsonb := null; turn_result jsonb := null;
  xp_gain int; gold_gain int; cards_gain int; old_level int; damage int; chip int;
- chosen_move int; tier int; candidate_tier int; hp int; milestone boolean := false;
+ chosen_move int; v_tier int; candidate_tier int; hp int; milestone boolean := false;
  last_spawn timestamptz; spawn_gap interval;
 begin
  if uid is null then raise exception 'Please sign in again.'; end if;
@@ -203,9 +203,9 @@ begin
 
  if u.last_rollover_date is distinct from today then
    u.missed_dailies := exists (
-     select 1 from public.tasks t where t.user_id = uid and t.type = 'daily'
-     and (t.created_at at time zone 'UTC')::date < today
-     and not exists (select 1 from public.task_logs l where l.task_id = t.id
+     select 1 from public.tasks quest where quest.user_id = uid and quest.type = 'daily'
+     and (quest.created_at at time zone 'UTC')::date < today
+     and not exists (select 1 from public.task_logs l where l.task_id = quest.id
        and (l.completed_at at time zone 'UTC')::date = today - 1)
    );
    update public.tasks set is_completed = false where user_id = uid and type = 'daily';
@@ -352,14 +352,14 @@ begin
    -- A seven-day streak earns a bounded second daily opportunity, never unlimited rerolls.
    spawn_gap := case when u.streak_count >= 7 and not u.missed_dailies then interval '12 hours' else interval '24 hours' end;
    if last_spawn is null or now()-last_spawn >= spawn_gap then
-     tier := greatest(1,1+(u.level-1)/4) + case when u.missed_dailies then 1 else 0 end;
-     select max(s.tier) into candidate_tier from public.species s where not starter and s.tier <= tier;
+     v_tier := greatest(1,1+(u.level-1)/4) + case when u.missed_dailies then 1 else 0 end;
+     select max(candidate.tier) into candidate_tier from public.species candidate where not candidate.starter and candidate.tier <= v_tier;
      select * into s from public.species where not starter and species.tier = candidate_tier
        order by -ln(greatest(random(),0.000001)) * rarity limit 1;
      if found then
-       hp := greatest(1,round(s.base_hp*(1+0.15*u.level)*(1+0.1*(tier-1)))::int);
+       hp := greatest(1,round(s.base_hp*(1+0.15*u.level)*(1+0.1*(v_tier-1)))::int);
        insert into public.wild_encounters(user_id,species_id,current_hp,max_hp,difficulty_tier)
-         values(uid,s.id,hp,hp,tier);
+         values(uid,s.id,hp,hp,v_tier);
        insert into public.pokedex_entries(user_id,species_id,status) values(uid,s.id,'seen')
          on conflict(user_id,species_id) do nothing;
      end if;

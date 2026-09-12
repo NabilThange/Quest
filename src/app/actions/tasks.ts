@@ -2,34 +2,27 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
-import { xpToNextLevel, XP_REWARDS, CURRENCY_REWARDS } from '@/types';
 import type { Difficulty, TaskType, Attribute } from '@/types';
+import type { GameResult } from '@/types/rpg';
+
+function validTitle(title: string) {
+  return typeof title === 'string' && title.trim().length > 0 && title.trim().length <= 200;
+}
 
 export async function createTask(data: {
-  title: string;
-  type: TaskType;
-  difficulty: Difficulty;
-  attribute?: Attribute;
-  due_date?: string;
+  title: string; type: TaskType; difficulty: Difficulty; attribute?: Attribute; due_date?: string;
 }) {
+  if (!validTitle(data.title)) return { error: 'Use a quest title between 1 and 200 characters.' };
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: 'Unauthorized' };
-
   const { error } = await supabase.from('tasks').insert({
-    user_id: user.id,
-    title: data.title,
-    type: data.type,
-    difficulty: data.difficulty,
-    attribute: data.attribute ?? null,
-    due_date: data.due_date ?? null,
+    user_id: user.id, title: data.title.trim(), type: data.type, difficulty: data.difficulty,
+    attribute: data.attribute ?? null, due_date: data.due_date || null,
     recurrence_rule: data.type === 'daily' ? 'daily' : null,
   });
-
   if (error) return { error: error.message };
-  revalidatePath('/app');
-  revalidatePath('/app/todos');
-  revalidatePath('/app/habits');
+  revalidatePath('/app', 'layout');
   return { success: true };
 }
 
@@ -37,39 +30,28 @@ export async function deleteTask(taskId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: 'Unauthorized' };
-
-  const { error } = await supabase
-    .from('tasks')
-    .delete()
-    .eq('id', taskId)
-    .eq('user_id', user.id);
-
+  const { error } = await supabase.from('tasks').delete().eq('id', taskId).eq('user_id', user.id);
   if (error) return { error: error.message };
-  revalidatePath('/app');
-  revalidatePath('/app/todos');
-  revalidatePath('/app/habits');
+  revalidatePath('/app', 'layout');
   return { success: true };
 }
 
 export async function updateTask(taskId: string, updates: Partial<{
-  title: string;
-  difficulty: Difficulty;
-  attribute: Attribute;
-  due_date: string;
-  is_completed: boolean;
+  title: string; difficulty: Difficulty; attribute: Attribute; due_date: string;
 }>) {
+  if (updates.title !== undefined && !validTitle(updates.title)) return { error: 'Use a quest title between 1 and 200 characters.' };
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: 'Unauthorized' };
-
-  const { error } = await supabase
-    .from('tasks')
-    .update(updates)
-    .eq('id', taskId)
-    .eq('user_id', user.id);
-
+  // Explicitly whitelist editable fields; never accept completion/economy fields.
+  const fields: Record<string, string | null> = {};
+  if (updates.title !== undefined) fields.title = updates.title.trim();
+  if (updates.difficulty !== undefined) fields.difficulty = updates.difficulty;
+  if (updates.attribute !== undefined) fields.attribute = updates.attribute;
+  if (updates.due_date !== undefined) fields.due_date = updates.due_date || null;
+  const { error } = await supabase.from('tasks').update(fields).eq('id', taskId).eq('user_id', user.id);
   if (error) return { error: error.message };
-  revalidatePath('/app');
+  revalidatePath('/app', 'layout');
   return { success: true };
 }
 
@@ -77,80 +59,10 @@ export async function completeTask(taskId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: 'Unauthorized' };
-
-  // Fetch task
-  const { data: task, error: taskError } = await supabase
-    .from('tasks')
-    .select('*')
-    .eq('id', taskId)
-    .eq('user_id', user.id)
-    .single();
-
-  if (taskError || !task) return { error: 'Task not found' };
-  if (task.is_completed && task.type !== 'habit') return { error: 'Already completed' };
-
-  // Fetch user profile
-  const { data: profile, error: profileError } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-
-  if (profileError || !profile) return { error: 'Profile not found' };
-
-  const xpGained = XP_REWARDS[task.difficulty as Difficulty];
-  const currencyGained = CURRENCY_REWARDS[task.difficulty as Difficulty];
-
-  let newXp = profile.xp + xpGained;
-  let newLevel = profile.level;
-  let leveledUp = false;
-
-  // Non-linear leveling loop
-  while (newXp >= xpToNextLevel(newLevel)) {
-    newXp -= xpToNextLevel(newLevel);
-    newLevel += 1;
-    leveledUp = true;
-  }
-
-  const today = new Date().toISOString().split('T')[0];
-
-  // Update task
-  const taskUpdate: Record<string, unknown> = { is_completed: true };
-  if (task.type === 'habit') {
-    taskUpdate.habit_streak = task.habit_streak + 1;
-    taskUpdate.is_completed = false; // habits don't stay completed
-  }
-
-  await supabase.from('tasks').update(taskUpdate).eq('id', taskId);
-
-  // Update user profile
-  await supabase
-    .from('users')
-    .update({
-      xp: newXp,
-      level: newLevel,
-      currency: profile.currency + currencyGained,
-      last_active_date: today,
-    })
-    .eq('id', user.id);
-
-  // Insert task log
-  await supabase.from('task_logs').insert({
-    task_id: taskId,
-    user_id: user.id,
-    xp_awarded: xpGained,
-    currency_awarded: currencyGained,
-  });
-
-  revalidatePath('/app');
-  revalidatePath('/app/todos');
-  revalidatePath('/app/habits');
-
-  return {
-    success: true,
-    xpGained,
-    currencyGained,
-    leveledUp,
-    newLevel,
-  };
+  const { data, error } = await supabase.rpc('life_rpg', { p_action: 'complete', p_id: taskId });
+  if (error) return { error: error.message };
+  const result = data as GameResult;
+  if (result.error || !result.reward) return { error: result.error ?? 'Reward could not be confirmed.' };
+  revalidatePath('/app', 'layout');
+  return { success: true, ...result.reward };
 }

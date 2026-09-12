@@ -16,54 +16,40 @@ interface CardDraftModalProps {
   onClose?: () => void;
 }
 
-const ELEMENT_STYLES: Record<string, { bg: string; border: string; badge: string; text: string; icon: any }> = {
+const ELEMENT_INK_STYLES: Record<string, { badge: string; text: string; icon: any }> = {
   Water: {
-    bg: 'bg-blue-950/40 hover:bg-blue-900/50',
-    border: 'border-blue-500/40 hover:border-blue-400',
-    badge: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-    text: 'text-blue-400',
+    badge: 'bg-[#20639b]/15 text-[#0f3d63] border-[#185080]/30',
+    text: 'text-[#0f3d63]',
     icon: Droplets,
   },
   Fire: {
-    bg: 'bg-red-950/40 hover:bg-red-900/50',
-    border: 'border-red-500/40 hover:border-red-400',
-    badge: 'bg-red-500/20 text-red-300 border-red-500/30',
-    text: 'text-red-400',
+    badge: 'bg-[#c84b31]/15 text-[#8b2500] border-[#a03018]/30',
+    text: 'text-[#8b2500]',
     icon: Flame,
   },
   Electric: {
-    bg: 'bg-amber-950/40 hover:bg-amber-900/50',
-    border: 'border-amber-500/40 hover:border-amber-400',
-    badge: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-    text: 'text-amber-400',
+    badge: 'bg-[#d49a00]/15 text-[#7a5000] border-[#9e6b00]/30',
+    text: 'text-[#7a5000]',
     icon: Zap,
   },
   Grass: {
-    bg: 'bg-emerald-950/40 hover:bg-emerald-900/50',
-    border: 'border-emerald-500/40 hover:border-emerald-400',
-    badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-    text: 'text-emerald-400',
+    badge: 'bg-[#38761d]/15 text-[#1e4a10] border-[#2d6015]/30',
+    text: 'text-[#1e4a10]',
     icon: Shield,
   },
   Earth: {
-    bg: 'bg-stone-900/60 hover:bg-stone-800/70',
-    border: 'border-stone-500/40 hover:border-stone-400',
-    badge: 'bg-stone-500/20 text-stone-300 border-stone-500/30',
-    text: 'text-stone-300',
+    badge: 'bg-[#795548]/15 text-[#4e342e] border-[#5d4037]/30',
+    text: 'text-[#4e342e]',
     icon: Shield,
   },
   Psychic: {
-    bg: 'bg-purple-950/40 hover:bg-purple-900/50',
-    border: 'border-purple-500/40 hover:border-purple-400',
-    badge: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
-    text: 'text-purple-400',
+    badge: 'bg-[#673ab7]/15 text-[#3f1f7d] border-[#53289e]/30',
+    text: 'text-[#3f1f7d]',
     icon: Sparkles,
   },
   Normal: {
-    bg: 'bg-zinc-900/60 hover:bg-zinc-800/70',
-    border: 'border-zinc-500/40 hover:border-zinc-400',
-    badge: 'bg-zinc-500/20 text-zinc-300 border-zinc-500/30',
-    text: 'text-zinc-300',
+    badge: 'bg-[#607d8b]/15 text-[#37474f] border-[#455a64]/30',
+    text: 'text-[#37474f]',
     icon: Wind,
   },
 };
@@ -122,10 +108,10 @@ export function CardDraftModal({
             </p>
           </div>
 
-          {/* Cards 3-Column Grid */}
+          {/* Cards 3-Column Grid using Authentic Paper UI Assets */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 pt-2">
             {cards.map((card, idx) => {
-              const style = ELEMENT_STYLES[card.element] ?? ELEMENT_STYLES.Normal;
+              const ink = ELEMENT_INK_STYLES[card.element] ?? ELEMENT_INK_STYLES.Normal;
               const isSelected = selectedCardId === card.id;
 
               return (
@@ -136,60 +122,68 @@ export function CardDraftModal({
                   transition={{ delay: idx * 0.1 }}
                   whileHover={{ y: -6, scale: 1.02 }}
                   onClick={() => handlePick(card)}
+                  style={{
+                    backgroundImage: "url('/assets/paper/BackgroundSettingsMenu.png')",
+                    backgroundSize: '100% 100%',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                  }}
                   className={cn(
-                    'relative flex flex-col justify-between rounded-2xl border p-5 transition-all duration-200 cursor-pointer select-none text-left',
-                    style.bg,
-                    style.border,
-                    isSelected && 'ring-2 ring-foreground scale-105 shadow-xl bg-card'
+                    'relative flex flex-col justify-between p-7 sm:p-8 pt-9 pb-8 transition-all duration-200 cursor-pointer select-none text-left drop-shadow-xl font-serif',
+                    isSelected && 'ring-4 ring-brand-gold scale-105 filter brightness-105'
                   )}
                 >
-                  {/* Top badges */}
+                  {/* Top stamp row */}
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <span
                       className={cn(
-                        'inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold border',
-                        style.badge
+                        'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-bold border tracking-wide shadow-sm',
+                        ink.badge
                       )}
                     >
                       <span>{card.icon}</span>
                       <span>{card.element}</span>
                     </span>
 
-                    <span className="px-2 py-0.5 rounded-md text-xs font-mono bg-secondary text-text-secondary border border-border">
+                    <span className="px-2 py-0.5 rounded-md text-xs font-mono font-bold bg-[#e4cfb6]/70 text-[#24140b] border border-[#b8956e]/40 shadow-sm">
                       +{card.charges} {card.charges === 1 ? 'Charge' : 'Charges'}
                     </span>
                   </div>
 
-                  {/* Card Title & Category */}
-                  <div className="space-y-1 mb-4">
-                    <h3 className="text-lg font-bold text-foreground">{card.name}</h3>
-                    <p className="text-xs text-text-muted font-medium">{card.category}</p>
+                  {/* Card Title & Category in Dark Antique Ink */}
+                  <div className="space-y-1 mb-3">
+                    <h3 className="text-xl font-bold font-serif text-[#24140b] tracking-tight leading-tight">
+                      {card.name}
+                    </h3>
+                    <p className="text-[11px] font-serif uppercase tracking-wider text-[#7a5230] font-semibold">
+                      {card.category}
+                    </p>
                   </div>
 
-                  {/* Power Stat */}
-                  <div className="rounded-xl bg-background/60 border border-border/50 p-3 mb-4 flex items-center justify-between">
-                    <span className="text-xs font-medium text-text-secondary">Base Power</span>
-                    <span className={cn('text-lg font-bold font-mono', style.text)}>
+                  {/* Power Stat Stamped Parchment Block */}
+                  <div className="rounded-xl bg-[#e4cfb6]/50 border border-[#b8956e]/40 p-2.5 mb-3 flex items-center justify-between shadow-inner">
+                    <span className="text-xs font-semibold text-[#5c4028]">Base Power</span>
+                    <span className={cn('text-lg font-bold font-mono', ink.text)}>
                       {card.basePower} DMG
                     </span>
                   </div>
 
-                  {/* Pros & Cons */}
-                  <div className="space-y-2 mb-5 flex-1">
-                    <div className="text-xs text-emerald-400 leading-snug font-medium">
+                  {/* Pros & Cons with Distinct Ink Colors */}
+                  <div className="space-y-1.5 mb-5 flex-1">
+                    <div className="text-xs text-[#145a27] leading-snug font-semibold">
                       {card.pro}
                     </div>
                     {card.con && (
-                      <div className="text-xs text-amber-400/90 leading-snug font-medium">
+                      <div className="text-xs text-[#8a1c14] leading-snug font-semibold">
                         {card.con}
                       </div>
                     )}
-                    <p className="text-[11px] text-text-muted leading-relaxed italic pt-1">
+                    <p className="text-[11px] text-[#4a3525] leading-relaxed italic pt-1 border-t border-[#b8956e]/30 mt-2">
                       {card.description}
                     </p>
                   </div>
 
-                  {/* Action CTA */}
+                  {/* Action CTA Button Styled like an Ink Stamp */}
                   <button
                     type="button"
                     onClick={(e) => {
@@ -197,10 +191,10 @@ export function CardDraftModal({
                       handlePick(card);
                     }}
                     className={cn(
-                      'w-full py-2.5 px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors',
+                      'w-full py-2.5 px-4 rounded-xl text-sm font-serif font-bold tracking-wide flex items-center justify-center gap-2 transition-all shadow-md',
                       isSelected
-                        ? 'bg-foreground text-background'
-                        : 'bg-secondary text-text-primary hover:bg-foreground hover:text-background'
+                        ? 'bg-[#145a27] text-white'
+                        : 'bg-[#24140b] text-[#fbf6ee] hover:bg-[#3d2314] active:scale-95'
                     )}
                   >
                     {isSelected ? (
@@ -209,7 +203,7 @@ export function CardDraftModal({
                         <span>Claimed!</span>
                       </>
                     ) : (
-                      <span>Select Card</span>
+                      <span>Select This Card</span>
                     )}
                   </button>
                 </motion.div>

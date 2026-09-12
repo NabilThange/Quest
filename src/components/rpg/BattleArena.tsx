@@ -210,7 +210,7 @@ export function BattleArena({ game, busy, turn, expired, onAttack }: {
           <div className="flex flex-wrap justify-between gap-2"><h2 className="font-serif text-2xl">Your next move</h2><p className="text-sm text-text-secondary">One card. One turn. At your pace.</p></div>
           {companion.current_hp <= 0 && <p role="status" className="card">Your companion has fainted. <Link className="underline" href="/app/team">Rest or use a Potion</Link> before returning.</p>}
           {hand.length === 0 ? <div className="card text-center py-8"><p className="mb-4">Your hand is empty. The encounter stays until its expiry.</p><Link className="btn-primary" href="/app/todos">Earn cards with quests</Link></div> : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {hand.map(card => {
                 const move = game.moves.find(m => m.id === card.move_id);
                 if (!move) return null;
@@ -218,17 +218,27 @@ export function BattleArena({ game, busy, turn, expired, onAttack }: {
                 const tag = catalogMatch?.category ?? (move.type === 'Energy' ? 'Neutral Energy' : `${move.type} Strike`);
                 const pro = catalogMatch?.pro ?? `${move.type} elemental power`;
 
-                return <motion.button key={card.id} whileHover={reduced ? undefined : { y: -4 }} whileTap={reduced ? undefined : { scale: 0.97 }}
-                  onClick={() => onAttack(card.id)} disabled={busy || companion.current_hp <= 0} className="move-card text-left p-4 rounded-2xl border border-border bg-card hover:border-foreground/40 transition-all shadow-sm"
+                return <motion.button key={card.id} whileHover={reduced ? undefined : { y: -5 }} whileTap={reduced ? undefined : { scale: 0.97 }}
+                  onClick={() => onAttack(card.id)} disabled={busy || companion.current_hp <= 0}
+                  style={{
+                    backgroundImage: "url('/assets/paper/BackgroundSettingsMenu.png')",
+                    backgroundSize: '100% 100%',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                  }}
+                  className="move-card text-left p-6 pt-7 pb-6 transition-all drop-shadow-md select-none font-serif cursor-pointer hover:drop-shadow-xl"
                   aria-label={`Play ${move.name}, ${card.quantity} charges remaining`}>
-                  <div className="flex justify-between items-center text-text-secondary mb-2">
+                  <div className="flex justify-between items-center mb-2">
                     <span className="text-2xl" aria-hidden="true">{move.icon}</span>
-                    <span className="rounded-full border border-border px-2 py-0.5 text-xs font-mono bg-secondary">×{card.quantity}</span>
+                    <span className="rounded-md bg-[#e4cfb6]/80 border border-[#b8956e]/40 px-2 py-0.5 text-xs font-mono font-bold text-[#24140b] shadow-sm">×{card.quantity}</span>
                   </div>
-                  <span className="block font-bold text-base text-foreground">{move.name}</span>
-                  <span className="mt-0.5 block text-xs text-brand-cyan font-medium">{tag}</span>
-                  <span className="mt-1 block text-xs text-text-secondary font-mono">{move.base_power} Base Power</span>
-                  <span className="mt-2 block text-[11px] text-emerald-400 font-medium leading-tight truncate">{pro}</span>
+                  <span className="block font-bold text-lg font-serif text-[#24140b] tracking-tight">{move.name}</span>
+                  <span className="mt-0.5 block text-xs font-serif uppercase tracking-wider text-[#7a5230] font-semibold">{tag}</span>
+                  <div className="mt-2 rounded-lg bg-[#e4cfb6]/50 border border-[#b8956e]/40 px-2.5 py-1 flex items-center justify-between text-xs font-mono text-[#301a0c] font-bold shadow-inner">
+                    <span>Power</span>
+                    <span>{move.base_power} DMG</span>
+                  </div>
+                  <span className="mt-2.5 block text-[11px] font-serif text-[#145a27] font-semibold leading-tight truncate">{pro}</span>
                 </motion.button>;
               })}
             </div>

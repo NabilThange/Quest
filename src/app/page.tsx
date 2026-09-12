@@ -242,8 +242,9 @@ export default function QuestLandingPage() {
             muted
             playsInline
             className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260325_120549_0cd82c36-56b3-4dd9-b190-069cfc3a623f.mp4"
-          />
+          >
+            <source src="/hero-bg.webm" type="video/webm" />
+          </video>
 
           {/* Bottom Gradient Fade to Black */}
           <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-background to-transparent pointer-events-none z-[2]" />

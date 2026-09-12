@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { APP_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Blog — Habit Science, Gamification & Productivity',
@@ -54,7 +55,6 @@ const posts = [
 ];
 
 export default function BlogPage() {
-  const APP_URL = process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://doquest.vercel.app';
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Blog',

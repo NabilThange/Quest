@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-const APP_URL = process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://doquest.vercel.app';
+import { APP_URL } from '@/lib/constants';
 
 // ─── Post Content Database ────────────────────────────────────────────────────
 const posts: Record<string, {

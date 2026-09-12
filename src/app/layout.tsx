@@ -22,7 +22,7 @@ const playfair = Playfair_Display({
   display: 'swap',
 });
 
-const APP_URL = process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? 'https://doquest.vercel.app';
+import { APP_URL } from '@/lib/constants';
 
 // Viewport must be a separate export in Next.js 14+
 export const viewport: Viewport = {

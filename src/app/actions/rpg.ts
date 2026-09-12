@@ -18,6 +18,7 @@ export async function gameAction(action: GameAction, input: {
     p_request: input.request ?? null, p_encounter: input.encounter ?? null,
   });
   if (error) return { error: error.message };
-  if (action !== 'refresh') revalidatePath('/app', 'layout');
+  // Keep a capture resolution visible until the player navigates away.
+  if (action !== 'refresh' && action !== 'attack') revalidatePath('/app', 'layout');
   return data as GameResult;
 }

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { ShopGrid } from '@/components/app/ShopGrid';
+import { GameSection } from '@/components/rpg/GameSection';
 
 export default async function RewardsPage() {
   const supabase = await createClient();
@@ -17,6 +18,7 @@ export default async function RewardsPage() {
 
   return (
     <div className="space-y-8 pb-20 lg:pb-0">
+      <GameSection view="shop" />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Rewards Shop</h1>

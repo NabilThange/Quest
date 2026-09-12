@@ -13,6 +13,8 @@ import {
   User,
   LogOut,
   Sword,
+  BookOpen,
+  PawPrint,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { XpBar } from '@/components/ui/XpBar';
@@ -21,8 +23,11 @@ import { signOut } from '@/app/actions/auth';
 import type { User as UserProfile } from '@/types';
 
 const navItems = [
-  { href: '/app', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+  { href: '/app', label: 'Lodge', icon: LayoutDashboard, exact: true },
   { href: '/app/todos', label: 'Quests', icon: CheckSquare },
+  { href: '/app/battle', label: 'Battle', icon: Sword },
+  { href: '/app/pokedex', label: 'Pokédex', icon: BookOpen },
+  { href: '/app/team', label: 'Team', icon: PawPrint },
   { href: '/app/habits', label: 'Habits', icon: Flame },
   { href: '/app/calendar', label: 'Calendar', icon: Calendar },
   { href: '/app/rewards', label: 'Shop', icon: ShoppingBag },
@@ -126,15 +131,15 @@ export function Sidebar({ profile }: SidebarProps) {
         className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-bg-secondary border-t border-border"
         aria-label="Mobile navigation"
       >
-        <div className="flex items-center justify-around px-2 py-2">
-          {navItems.slice(0, 5).map((item) => {
+        <div className="flex items-center gap-1 overflow-x-auto px-2 py-2">
+          {navItems.map((item) => {
             const active = isActive(item);
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex flex-col items-center gap-1 px-3 py-1.5 rounded-lg transition-all',
+                  'flex shrink-0 flex-col items-center gap-1 px-3 py-1.5 rounded-lg transition-all',
                   'focus:outline-none focus:ring-2 focus:ring-brand-cyan/50',
                   active ? 'text-brand-cyan' : 'text-text-muted'
                 )}

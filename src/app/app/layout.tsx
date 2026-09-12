@@ -26,6 +26,7 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-screen bg-bg-primary flex">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 btn-primary">Skip to content</a>
       <Sidebar profile={profile} />
       <main
         className="flex-1 min-h-screen overflow-y-auto"

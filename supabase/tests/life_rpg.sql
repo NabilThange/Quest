@@ -158,6 +158,30 @@ begin
  assert (select level >= 3 and xp < public.rpg_xp_needed(level) from public.user_pokemon where id = companion), 'XP can cross multiple nonlinear levels';
  assert (select max_hp = 45+level*5 from public.user_pokemon where id = companion), 'Level-up HP growth';
 
+ -- Simulate the first visit on a new UTC day and the seven-day milestone.
+ insert into public.tasks(user_id,title,type,created_at) values(actor,'Yesterday daily','daily',now()-interval '2 days');
+ update public.users set last_active_date = (now() at time zone 'UTC')::date-1,
+   last_rollover_date = (now() at time zone 'UTC')::date-1, streak_count = 6, level = 8, xp = 0 where id = actor;
+ insert into public.tasks(user_id,title,type,difficulty) values(actor,'Milestone task','todo','easy') returning id into task_id;
+ reply := public.life_rpg('complete',p_id => task_id);
+ assert (reply #>> '{reward,milestone}')::boolean, 'Seven-day milestone triggers';
+ assert (reply #>> '{reward,cardsGained}')::int = 2, 'Milestone grants an extra guaranteed card';
+ assert (reply #>> '{reward,currencyGained}')::int = 55, 'Milestone gold bonus';
+ assert (select missed_dailies from public.users where id = actor), 'Missed yesterday daily is recorded';
+ insert into public.tasks(user_id,title,type,difficulty) values(actor,'Another task','todo','easy') returning id into task_id;
+ reply := public.life_rpg('complete',p_id => task_id);
+ assert not (reply #>> '{reward,milestone}')::boolean, 'Milestone cannot repeat on the same day';
+ update public.wild_encounters set status = 'fled', spawned_at = now()-interval '25 hours', expires_at = now()-interval '1 hour' where user_id = actor;
+ reply := public.life_rpg('refresh');
+ assert (reply #>> '{state,encounter,difficulty_tier}')::int = 3, 'Missed daily adds a difficulty tier';
+ assert (select count(*) = 1 from public.wild_encounters where user_id = actor and status = 'active'), 'Higher levels fall back to available roster';
+ update public.users set missed_dailies = false where id = actor;
+ update public.wild_encounters set status = 'fled', spawned_at = now()-interval '13 hours', expires_at = now()+interval '11 hours' where user_id = actor;
+ perform public.life_rpg('refresh');
+ assert (select count(*) = 1 from public.wild_encounters where user_id = actor and status = 'active'), 'Hot streak allows a bounded 12-hour bonus spawn';
+ perform public.life_rpg('refresh');
+ assert (select count(*) = 1 from public.wild_encounters where user_id = actor and status = 'active'), 'Bonus spawn still obeys one-active rule';
+
  assert not has_column_privilege('authenticated','public.tasks','is_completed','UPDATE'), 'Direct completion writes disabled';
  assert not has_column_privilege('authenticated','public.tasks','last_rewarded_at','INSERT'), 'Direct reward timestamp writes disabled';
  assert has_column_privilege('authenticated','public.tasks','title','UPDATE'), 'Task editing remains available';

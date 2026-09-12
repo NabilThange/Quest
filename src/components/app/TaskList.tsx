@@ -34,7 +34,7 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
       const result = await completeTask(task.id);
       if (result.error) toast.error(result.error);
       else if (result.success) {
-        const text = `+${result.xpGained} XP · +${result.currencyGained} gold · +${result.cardsGained} ${result.cardName} ${result.cardsGained === 1 ? 'card' : 'cards'}`;
+        const text = `+${result.xpGained} XP · +${result.currencyGained} gold · +${result.cardsGained} ${result.cardName} ${result.cardsGained === 1 ? 'card' : 'cards'}${result.companionLeveledUp ? ` · Companion reached level ${result.companionLevel}!` : ''}`;
         setReward({ id: task.id, text });
         toast.success(text, { icon: '✦', duration: 4500 });
         if (result.leveledUp) setLevelUp({ show: true, level: result.newLevel ?? 1 });

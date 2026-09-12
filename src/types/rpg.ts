@@ -73,6 +73,8 @@ export interface TaskReward {
   cardName: string;
   leveledUp: boolean;
   newLevel: number;
+  companionLevel: number;
+  companionLeveledUp: boolean;
   milestone: boolean;
 }
 export interface GameResult {

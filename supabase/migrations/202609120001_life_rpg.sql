@@ -270,6 +270,8 @@ begin
    end if;
    reward := jsonb_build_object('xpGained',xp_gain,'currencyGained',gold_gain,'cardsGained',cards_gain,
      'cardName',(select name from public.moves where id = chosen_move),'leveledUp',u.level > old_level,'newLevel',u.level,
+     'companionLevel',(select level from public.user_pokemon where id = p.id),
+     'companionLeveledUp',(select level > p.level from public.user_pokemon where id = p.id),
      'milestone',milestone);
  end if;
 
@@ -277,7 +279,7 @@ begin
    if p_request is null or p_encounter is null then raise exception 'Missing turn identifier.'; end if;
    select * into previous from public.battle_logs where user_id = uid and request_id = p_request;
    if found then
-     if previous.card_id <> p_id or previous.encounter_id <> p_encounter then raise exception 'Turn identifier already used.'; end if;
+     if previous.card_id is distinct from p_id or previous.encounter_id is distinct from p_encounter then raise exception 'Turn identifier already used.'; end if;
      return jsonb_build_object('state',public.rpg_snapshot(uid),'turn',to_jsonb(previous));
    end if;
    select * into e from public.wild_encounters where id = p_encounter and user_id = uid for update;

@@ -58,11 +58,11 @@ export async function updateTask(taskId: string, updates: Partial<{
 export async function completeTask(taskId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: 'Unauthorized' };
+  if (!user) return { success: false as const, error: 'Unauthorized' };
   const { data, error } = await supabase.rpc('life_rpg', { p_action: 'complete', p_id: taskId });
-  if (error) return { error: error.message };
+  if (error) return { success: false as const, error: error.message };
   const result = data as GameResult;
-  if (result.error || !result.reward) return { error: result.error ?? 'Reward could not be confirmed.' };
+  if (result.error || !result.reward) return { success: false as const, error: result.error ?? 'Reward could not be confirmed.' };
   revalidatePath('/app', 'layout');
-  return { success: true, ...result.reward };
+  return { success: true as const, error: undefined, ...result.reward };
 }

@@ -10,7 +10,7 @@ declare
  task_id uuid; daily_id uuid; habit_id uuid; foreign_task uuid;
  companion uuid; encounter uuid; card uuid; request uuid;
  captured_species int; quantity_before int; hp_before int;
- reply jsonb; replay jsonb; expired_id uuid; item_id uuid; other_item uuid;
+ reply jsonb; replay jsonb; expired_id uuid; v_item_id uuid; other_item uuid;
 begin
  assert public.rpg_xp_needed(1) = 100, 'Level one threshold';
  assert public.rpg_xp_needed(2) = 283, 'Nonlinear level two threshold';
@@ -139,9 +139,9 @@ begin
  select species_id into captured_species from public.wild_encounters where id = encounter;
  assert (select status = 'caught' from public.pokedex_entries where user_id = actor and species_id = captured_species), 'Capture updates dex';
 
- insert into public.shop_items(name,cost,type) values('Test badge',10,'badge') returning id into item_id;
+ insert into public.shop_items(name,cost,type) values('Test badge',10,'badge') returning id into v_item_id;
  insert into public.shop_items(name,cost,type) values('Second badge',10,'badge') returning id into other_item;
- perform public.life_rpg('purchase',p_id => item_id);
+ perform public.life_rpg('purchase',p_id => v_item_id);
  assert (select currency = 5 from public.users where id = actor), 'Shop charges atomically';
  begin
   perform public.life_rpg('purchase',p_id => other_item);
@@ -149,7 +149,7 @@ begin
  exception when raise_exception then
   if sqlerrm <> 'Insufficient currency.' then raise; end if;
  end;
- assert not exists(select 1 from public.user_inventory where user_id = actor and item_id = other_item), 'Failed purchase creates no inventory';
+ assert not exists(select 1 from public.user_inventory ui where ui.user_id = actor and ui.item_id = other_item), 'Failed purchase creates no inventory';
 
  insert into public.wild_encounters(user_id,species_id,current_hp,max_hp,difficulty_tier,spawned_at,expires_at)
   values(actor,captured_species,20,20,1,now()-interval '25 hours',now()-interval '1 hour') returning id into expired_id;

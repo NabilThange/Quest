@@ -10,6 +10,7 @@ import type { BattleTurn, GameAction, GameState } from '@/types/rpg';
 import type { GameView } from './GameSection';
 import { CreatureSprite } from './CreatureSprite';
 import { BattleArena, VitalBar } from './BattleArena';
+import { AudioController } from '@/components/ui/AudioController';
 
 type ActionInput = { id?: string; species?: number; request?: string; encounter?: string };
 const titles: Record<GameView, [string, string]> = {
@@ -90,7 +91,13 @@ export function GamePanel({ initial, view }: { initial: GameState; view: GameVie
         <header className="flex flex-wrap items-start justify-between gap-4">
           <div><p className="mb-2 text-xs uppercase tracking-[0.22em] text-text-secondary">{titles[view][1]}</p>
             <h1 className="font-serif text-3xl sm:text-4xl leading-tight">{titles[view][0]}</h1></div>
-          <span className="rounded-full border border-border bg-card px-4 py-2 text-sm font-mono">{game.profile.currency} gold</span>
+          <div className="flex items-center gap-3">
+            {game.team.length === 0 && <AudioController play={true} />}
+            <span className="flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-sm font-mono">
+              <img src="/assets/items/coin.png" alt="" className="w-4 h-4 pixel-art" style={{ imageRendering: 'pixelated' }} />
+              {game.profile.currency} gold
+            </span>
+          </div>
         </header>
         <nav aria-label="Creature adventure" className="flex flex-wrap gap-2 text-sm">
           {([['/app', 'Lodge'], ['/app/battle', 'Battle'], ['/app/pokedex', 'Pokédex'], ['/app/team', 'Team'], ['/app/rewards', 'Shop']] as const).map(([href, label]) => (
@@ -107,13 +114,28 @@ export function GamePanel({ initial, view }: { initial: GameState; view: GameVie
             <div className="card-elevated p-6"><h2 className="font-serif text-2xl">Choose your first companion</h2>
               <p className="mt-2 text-text-secondary">Four small beginnings. No wrong choice. Matching quests earn signature moves; everything else becomes Energy.</p></div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              {game.species.filter(s => s.starter).map(species => <button key={species.id} disabled={busy} onClick={() => void run('choose', { species: species.id })}
-                className="card flex flex-col items-center gap-4 py-6 text-center hover:-translate-y-1 transition-transform">
-                <CreatureSprite species={species} />
-                <span className="font-serif text-xl">{species.name}</span><span className="text-xs text-text-secondary">{species.elemental_type}</span>
-                <span className="text-xs font-mono">{species.base_hp + 5} HP · {species.base_attack + 2} ATK</span>
-                <span className="text-sm underline underline-offset-4">Choose companion</span>
-              </button>)}
+              {game.species.filter(s => s.starter).map(species => {
+                const symbols: Record<string, string> = { Strength: '✦', Intellect: 'ϟ', Discipline: '❧', Creativity: '✧' };
+                return (
+                  <button key={species.id} disabled={busy} onClick={() => void run('choose', { species: species.id })}
+                    className="card flex flex-col items-center gap-3 py-6 text-center hover:-translate-y-1 transition-transform">
+                    <CreatureSprite species={species} />
+                    <div className="space-y-1">
+                      <span className="font-serif text-xl flex items-center justify-center gap-1.5">
+                        {species.name}
+                        <span className="text-xs font-sans opacity-70" title={species.elemental_type}>
+                          {symbols[species.elemental_type]}
+                        </span>
+                      </span>
+                      <span className="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium border border-border bg-secondary/60">
+                        {symbols[species.elemental_type]} {species.elemental_type}
+                      </span>
+                    </div>
+                    <span className="text-xs font-mono">{species.base_hp + 5} HP · {species.base_attack + 2} ATK</span>
+                    <span className="text-sm underline underline-offset-4 mt-2">Choose companion</span>
+                  </button>
+                );
+              })}
             </div>
           </section>
         ) : <>
@@ -161,7 +183,14 @@ export function GamePanel({ initial, view }: { initial: GameState; view: GameVie
                     <span className="self-start text-xs font-mono text-text-secondary">NO. {String(species.id).padStart(3, '0')}</span>
                     <CreatureSprite species={species} silhouette={!owned} />
                     <span className="font-serif text-xl">{owned ? species.name : '???'}</span>
-                    <span className="text-xs text-text-secondary">{owned ? 'Caught · tap for stats' : entry ? 'Seen, not caught' : 'Not yet encountered'}</span>
+                    <span className="text-xs text-text-secondary flex items-center justify-center gap-1">
+                      {owned ? (
+                        <>
+                          <img src="/assets/items/pokeball.png" alt="" className="w-3.5 h-3.5 pixel-art" style={{ imageRendering: 'pixelated' }} />
+                          Caught · tap for stats
+                        </>
+                      ) : entry ? 'Seen, not caught' : 'Not yet encountered'}
+                    </span>
                   </summary>
                   <div className="mt-4 border-t border-border pt-3 text-xs text-text-secondary">{owned ? <><p>{species.elemental_type} · Rarity {species.rarity}</p><p className="mt-2">Base HP {species.base_hp} · Base ATK {species.base_attack}</p><p className="mt-2">{game.moves.filter(m => m.species_id === species.id && m.type !== 'Energy').map(m => `${m.name} (Lv.${m.unlock_level})`).join(' · ')}</p></> : <p>A silhouette today. A companion tomorrow. Keep completing quests and visiting the clearing.</p>}</div>
                 </details>;
@@ -183,7 +212,10 @@ export function GamePanel({ initial, view }: { initial: GameState; view: GameVie
                 <div className="flex flex-wrap gap-2">
                   {view === 'team' && !selected && <button className="btn-primary text-sm" disabled={busy || pokemon.current_hp === 0} onClick={() => void run('switch', { id: pokemon.id })}>Make active</button>}
                   <button className="btn-secondary text-sm" disabled={busy || full || restUsed} onClick={() => void run('rest', { id: pokemon.id })}>{restUsed ? 'Rest used today' : 'Free rest'}</button>
-                  <button className="btn-secondary text-sm" disabled={busy || full || game.profile.currency < 20} onClick={() => void run('potion', { id: pokemon.id })}>Potion · 20 gold</button>
+                  <button className="btn-secondary text-sm flex items-center gap-1.5" disabled={busy || full || game.profile.currency < 20} onClick={() => void run('potion', { id: pokemon.id })}>
+                    <img src="/assets/items/potion_red.png" alt="" className="w-4 h-4 pixel-art" style={{ imageRendering: 'pixelated' }} />
+                    Potion · 20 gold
+                  </button>
                 </div>
                 {view === 'team' && <ul className="space-y-2 border-t border-border pt-3 text-sm">{game.moves.filter(m => m.species_id === species.id).map(move => <li key={move.id} className="flex justify-between gap-2"><span>{move.icon} {move.name}</span><span className="text-text-secondary">{move.unlock_level > pokemon.level ? `Unlocks Lv.${move.unlock_level}` : `×${game.cards.find(c => c.pokemon_id === pokemon.id && c.move_id === move.id)?.quantity ?? 0}`}</span></li>)}</ul>}
               </article>;

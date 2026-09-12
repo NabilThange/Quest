@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { CreatureSprite } from './CreatureSprite';
+import { AudioController } from '@/components/ui/AudioController';
 import type { BattleTurn, GameState, Move } from '@/types/rpg';
 import background from '../../../ASSETS/AA_Catchimon_19_20_21_FREE/Battle Background Layer 01.png';
 
@@ -11,7 +12,13 @@ export function VitalBar({ value, max, label }: { value: number; max: number; la
   const reduced = useReducedMotion();
   return (
     <div className="w-full">
-      <div className="mb-2 flex justify-between gap-3 text-xs"><span>{label}</span><span className="font-mono">{value} / {max}</span></div>
+      <div className="mb-2 flex justify-between items-center gap-3 text-xs">
+        <span className="flex items-center gap-1.5">
+          <img src="/assets/items/heart.png" alt="" className="w-3 h-3 pixel-art inline" style={{ imageRendering: 'pixelated' }} />
+          {label}
+        </span>
+        <span className="font-mono">{value} / {max}</span>
+      </div>
       <div role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={max} aria-valuenow={value}
         className="h-2 overflow-hidden rounded-full bg-secondary">
         <motion.div initial={false} animate={{ width: `${Math.max(0, Math.min(100, value / Math.max(1, max) * 100))}%` }}
@@ -46,25 +53,44 @@ export function BattleArena({ game, busy, turn, expired, onAttack }: {
       <section aria-label="Battle clearing" className="relative isolate overflow-hidden rounded-3xl border border-border bg-card p-5 sm:p-8">
         <Image src={background} alt="" fill priority sizes="(max-width: 1024px) 100vw, 900px" className="-z-20 object-cover opacity-25 pixel-art" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-card/70 via-card/20 to-card" />
-        <div className="flex flex-wrap justify-between gap-3 text-xs uppercase tracking-widest text-text-secondary">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-widest text-text-secondary">
           <span>The quiet clearing · Tier {encounter.difficulty_tier}</span>
-          <span>{opponent.elemental_type}</span>
+          <div className="flex items-center gap-3">
+            <AudioController play={!ended} />
+            <span>{opponent.elemental_type}</span>
+          </div>
         </div>
         <div className="my-8 grid grid-cols-2 items-end gap-4 sm:gap-12">
-          <div className="flex flex-col items-center gap-4">
-            <CreatureSprite species={ally} />
-            <div className="w-full max-w-64 rounded-2xl bg-card/90 p-3">
+          <div className="flex flex-col items-center gap-2">
+            <div className="relative flex flex-col items-center">
+              <CreatureSprite species={ally} />
+              <img
+                src="/assets/ui/battle-spot.png"
+                alt=""
+                className="w-28 sm:w-36 -mt-3 opacity-90 pixel-art pointer-events-none"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            </div>
+            <div className="w-full max-w-64 rounded-2xl bg-card/90 p-3 shadow-sm border border-border/60">
               <h2 className="mb-3 font-semibold">{companion.nickname ?? ally.name} <span className="text-xs text-text-secondary">Lv. {companion.level}</span></h2>
               <VitalBar value={companion.current_hp} max={companion.max_hp} label="Companion HP" />
             </div>
           </div>
-          <div className="relative flex flex-col items-center gap-4">
-            <motion.div key={turn?.id ?? 'idle'} animate={!reduced && turn ?
-              lastMove?.type === 'Discipline' ? { y: [0, -6, 3, -3, 0] } :
-              lastMove?.type === 'Creativity' ? { rotate: [0, -6, 6, 0] } :
-              { x: [0, -8, 8, -4, 0] } : { x: 0 }}>
-              <CreatureSprite species={opponent} silhouette={encounter.status === 'fled' || expired} />
-            </motion.div>
+          <div className="relative flex flex-col items-center gap-2">
+            <div className="relative flex flex-col items-center">
+              <motion.div key={turn?.id ?? 'idle'} animate={!reduced && turn ?
+                lastMove?.type === 'Discipline' ? { y: [0, -6, 3, -3, 0] } :
+                lastMove?.type === 'Creativity' ? { rotate: [0, -6, 6, 0] } :
+                { x: [0, -8, 8, -4, 0] } : { x: 0 }}>
+                <CreatureSprite species={opponent} silhouette={encounter.status === 'fled' || expired} />
+              </motion.div>
+              <img
+                src="/assets/ui/battle-spot.png"
+                alt=""
+                className="w-28 sm:w-36 -mt-3 opacity-90 pixel-art pointer-events-none"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            </div>
             {!reduced && turn && <div key={`sparks-${turn.id}`} className="pointer-events-none absolute left-1/2 top-12" aria-hidden="true">
               {[[0,-60],[45,-40],[60,0],[35,40],[-35,40],[-60,-15]].map(([x,y], index) =>
                 <motion.span key={index} className="absolute text-2xl text-primary" initial={{ opacity: 1, x: 0, y: 0, scale: 0.5 }}
@@ -78,7 +104,7 @@ export function BattleArena({ game, busy, turn, expired, onAttack }: {
                 {symbols[lastMove?.type ?? 'Energy']} −{turn.damage_dealt}
               </motion.div>}
             </AnimatePresence>
-            <div className="w-full max-w-64 rounded-2xl bg-card/90 p-3">
+            <div className="w-full max-w-64 rounded-2xl bg-card/90 p-3 shadow-sm border border-border/60">
               <h2 className="mb-3 font-semibold">{opponent.name} <span className="text-xs text-text-secondary">Wild</span></h2>
               <VitalBar value={encounter.current_hp} max={encounter.max_hp} label="Opponent HP" />
             </div>
@@ -89,7 +115,18 @@ export function BattleArena({ game, busy, turn, expired, onAttack }: {
 
       {ended ? (
         <section className="card-elevated py-8 text-center space-y-3" role="status">
-          <p className="text-3xl" aria-hidden="true">{encounter.status === 'captured' ? '✺' : '☁'}</p>
+          {encounter.status === 'captured' ? (
+            <div className="flex justify-center">
+              <img
+                src="/assets/items/pokeball.png"
+                alt="Captured in Pokéball"
+                className="w-12 h-12 pixel-art animate-bounce"
+                style={{ imageRendering: 'pixelated' }}
+              />
+            </div>
+          ) : (
+            <p className="text-3xl" aria-hidden="true">☁</p>
+          )}
           <h2 className="font-serif text-3xl">{encounter.status === 'captured' ? `${opponent.name} joins your story.` : 'A visitor, for another day.'}</h2>
           <p className="text-text-secondary">{encounter.status === 'captured' ? 'Caught! Your companion earns 25 XP and you receive 15 gold.' : 'This encounter has ended. Its silhouette remains in your collection.'}</p>
           <Link href="/app/pokedex" className="btn-primary inline-block">Open Pokédex</Link>

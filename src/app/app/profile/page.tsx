@@ -66,13 +66,37 @@ export default async function ProfilePage() {
         <section aria-label="Inventory">
           <h2 className="text-lg font-semibold mb-4">Inventory</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {(inventory ?? []).map((item) => (
-              <div key={item.id} className="card text-center">
-                <div className="text-3xl mb-2">{(item.shop_items as { icon?: string })?.icon ?? '📦'}</div>
-                <p className="text-sm font-medium">{(item.shop_items as { name?: string })?.name}</p>
-                <p className="text-xs text-text-muted capitalize">{(item.shop_items as { type?: string })?.type}</p>
-              </div>
-            ))}
+            {(inventory ?? []).map((item) => {
+              const shopItem = item.shop_items as { name?: string; icon?: string; type?: string } | null;
+              const assetMap: Record<string, string> = {
+                'Cyber Warrior Badge': '/assets/items/sword.png',
+                'Shadow Rogue Badge': '/assets/items/bow.png',
+                'Arcane Scholar Badge': '/assets/items/blue_orb.png',
+                'Iron Will Badge': '/assets/items/shield.png',
+                'Gold Frame': '/assets/items/key.png',
+                'Dragon Aura': '/assets/items/red_orb.png',
+              };
+              const assetSrc = (shopItem?.icon && shopItem.icon.startsWith('/')) ? shopItem.icon : (shopItem?.name ? assetMap[shopItem.name] : null);
+
+              return (
+                <div key={item.id} className="card text-center flex flex-col items-center">
+                  {assetSrc ? (
+                    <div className="h-10 w-10 flex items-center justify-center mb-2">
+                      <img
+                        src={assetSrc}
+                        alt=""
+                        className="max-h-full max-w-full pixel-art object-contain"
+                        style={{ imageRendering: 'pixelated' }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="text-3xl mb-2">{shopItem?.icon ?? '📦'}</div>
+                  )}
+                  <p className="text-sm font-medium">{shopItem?.name}</p>
+                  <p className="text-xs text-text-muted capitalize">{shopItem?.type}</p>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

@@ -33,7 +33,7 @@ export default async function AppLayout({
         id="main-content"
         tabIndex={-1}
       >
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">{children}</div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-20 pb-24 lg:py-8">{children}</div>
       </main>
     </div>
   );

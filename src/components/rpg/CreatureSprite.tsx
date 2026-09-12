@@ -15,14 +15,16 @@ export function CreatureSprite({ species, silhouette = false, size = 'large' }: 
   species: Species; silhouette?: boolean; size?: 'small' | 'large';
 }) {
   const [failed, setFailed] = useState<string | null>(null);
+  const spriteUrl = species.sprite_url ?? `/assets/creatures/${species.id}.png`;
   const label = silhouette ? 'Unidentified creature silhouette' : species.name;
   return (
     <div className={`creature-sprite ${size === 'large' ? 'h-24 w-24 sm:h-36 sm:w-36' : 'h-16 w-16'} ${silhouette ? 'bg-secondary text-muted-foreground' : colors[species.elemental_type]}`}>
-      {species.sprite_url && failed !== species.sprite_url ? (
+      {spriteUrl && failed !== spriteUrl ? (
         // URLs are catalog data; native images allow later art swaps without Next host configuration.
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={species.sprite_url} alt={label} onError={() => setFailed(species.sprite_url)}
-          className={`h-full w-full object-contain p-2 ${silhouette ? 'brightness-0 opacity-40' : ''}`} />
+        <img src={spriteUrl} alt={label} onError={() => setFailed(spriteUrl)}
+          className={`h-full w-full object-contain p-2 pixel-art ${silhouette ? 'brightness-0 opacity-40' : ''}`}
+          style={{ imageRendering: 'pixelated' }} />
       ) : (
         <span role="img" aria-label={label} className="flex flex-col items-center">
           <span aria-hidden="true" className={size === 'large' ? 'text-5xl' : 'text-2xl'}>{silhouette ? '?' : symbols[species.elemental_type]}</span>

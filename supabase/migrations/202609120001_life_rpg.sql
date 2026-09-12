@@ -95,11 +95,16 @@ update public.tasks t set last_rewarded_at = (select max(l.completed_at) from pu
 update public.users u set last_rollover_date = coalesce(last_active_date, (created_at at time zone 'UTC')::date),
   last_active_date = (select (max(l.completed_at) at time zone 'UTC')::date from public.task_logs l where l.user_id = u.id);
 
-insert into public.species(id,name,elemental_type,base_hp,base_attack,starter) values
- (1,'Emberpup','Strength',45,12,true), (2,'Voltling','Intellect',38,15,true),
- (3,'Mossling','Discipline',50,10,true), (4,'Prismling','Creativity',40,13,true),
- (5,'Rockjaw','Strength',55,14,false), (6,'Sparkbat','Intellect',42,17,false),
- (7,'Stonepaw','Discipline',58,11,false), (8,'Glimmox','Creativity',44,15,false);
+insert into public.species(id,name,elemental_type,base_hp,base_attack,starter,sprite_url) values
+ (1,'Emberpup','Strength',45,12,true,'/assets/creatures/1.png'),
+ (2,'Voltling','Intellect',38,15,true,'/assets/creatures/2.png'),
+ (3,'Mossling','Discipline',50,10,true,'/assets/creatures/3.png'),
+ (4,'Prismling','Creativity',40,13,true,'/assets/creatures/4.png'),
+ (5,'Rockjaw','Strength',55,14,false,'/assets/creatures/5.png'),
+ (6,'Sparkbat','Intellect',42,17,false,'/assets/creatures/6.png'),
+ (7,'Stonepaw','Discipline',58,11,false,'/assets/creatures/7.png'),
+ (8,'Glimmox','Creativity',44,15,false,'/assets/creatures/8.png')
+on conflict (id) do update set sprite_url = excluded.sprite_url;
 insert into public.moves(id,species_id,name,type,base_power,icon,unlock_level)
 select id*10, id,
  case elemental_type when 'Strength' then 'Tackle' when 'Intellect' then 'Shock' when 'Discipline' then 'Quake' else 'Confuse' end,

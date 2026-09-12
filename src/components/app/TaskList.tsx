@@ -11,6 +11,8 @@ import { Trash2, CheckCircle2, Circle, Flame, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 import { playQuestCompleteSound, playCoinSound, playLevelUpSound } from '@/lib/sound';
+import { CardDraftModal } from '@/components/rpg/CardDraftModal';
+import { generateCardDraft, type AttackCardDef } from '@/lib/rpg/cardCatalog';
 
 interface TaskListProps { tasks: Task[]; emptyMessage?: string }
 
@@ -22,6 +24,13 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
   const [editing, setEditing] = useState<Task | null>(null);
   const [today, setToday] = useState<string | null>(null);
   const [levelUp, setLevelUp] = useState({ show: false, level: 1 });
+  const [draftState, setDraftState] = useState<{
+    isOpen: boolean;
+    cards: AttackCardDef[];
+    taskTitle: string;
+    taskAttribute?: string | null;
+  } | null>(null);
+
   useEffect(() => {
     const update = () => setToday(new Date().toISOString().slice(0, 10));
     update();
@@ -37,7 +46,7 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
       const result = await completeTask(task.id);
       if (result.error) toast.error(result.error);
       else if (result.success) {
-        const text = `+${result.xpGained} XP · +${result.currencyGained} gold · +${result.cardsGained} ${result.cardName} ${result.cardsGained === 1 ? 'card' : 'cards'}${result.companionLeveledUp ? ` · Companion reached level ${result.companionLevel}!` : ''}`;
+        const text = `+${result.xpGained} XP · +${result.currencyGained} gold${result.companionLeveledUp ? ` · Companion reached level ${result.companionLevel}!` : ''}`;
         setReward({ id: task.id, text });
         toast.success(text, { icon: '✦', duration: 4500 });
         playQuestCompleteSound();
@@ -48,11 +57,32 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
           setTimeout(() => playLevelUpSound(), 450);
         }
         if (result.leveledUp) setLevelUp({ show: true, level: result.newLevel ?? 1 });
+
+        // Generate 3 card draft options biased by task attribute
+        const draftedCards = generateCardDraft({
+          taskAttribute: task.attribute,
+        });
+        setDraftState({
+          isOpen: true,
+          cards: draftedCards,
+          taskTitle: task.title,
+          taskAttribute: task.attribute,
+        });
+
         router.refresh();
       }
     } catch {
       toast.error('Connection interrupted. Refresh to check whether your reward was saved.');
     } finally { lock.current = false; setPending(null); }
+  }
+
+  function handleCardClaim(card: AttackCardDef) {
+    toast.success(`Acquired: ${card.name} (${card.element}) added to your Battle Deck!`, {
+      icon: card.icon,
+      duration: 4000,
+    });
+    setDraftState(null);
+    router.refresh();
   }
 
   async function handleDelete(taskId: string) {
@@ -128,5 +158,16 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
         })}
       </AnimatePresence>
     </ul>
+
+    {draftState && (
+      <CardDraftModal
+        isOpen={draftState.isOpen}
+        cards={draftState.cards}
+        taskTitle={draftState.taskTitle}
+        taskAttribute={draftState.taskAttribute}
+        onSelectCard={handleCardClaim}
+        onClose={() => setDraftState(null)}
+      />
+    )}
   </MotionConfig>;
 }

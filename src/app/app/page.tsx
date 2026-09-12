@@ -1,18 +1,19 @@
-import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { TaskList } from '@/components/app/TaskList';
 import { GameSection } from '@/components/rpg/GameSection';
 import { OverworldBanner } from '@/components/rpg/OverworldBanner';
 import { getTodayString } from '@/lib/utils';
 import { checkAndApplyRollover } from '@/app/actions/rollover';
+import { getUser } from '@/lib/supabase/get-user';
+import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getUser(); // cached — shared with AppLayout, no extra round-trip
   if (!user) redirect('/login');
-  // Layouts and pages can render concurrently. Settle rollover before reading today's quests.
-  await checkAndApplyRollover();
+  await checkAndApplyRollover(); // cached — no-op if layout already ran it
+
+  const supabase = await createClient();
   const [{ data: profile }, { data: dailies }, { data: todos }] = await Promise.all([
     supabase.from('users').select('streak_count').eq('id', user.id).single(),
     supabase.from('tasks').select('*').eq('user_id', user.id).eq('type', 'daily').order('created_at'),

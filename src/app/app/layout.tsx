@@ -1,29 +1,26 @@
-import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Sidebar } from '@/components/app/Sidebar';
 import { checkAndApplyRollover } from '@/app/actions/rollover';
 import { NavSoundListener } from '@/components/app/NavSoundListener';
-
 import { CardDraftHost } from '@/components/rpg/CardDraftHost';
+import { getUser } from '@/lib/supabase/get-user';
+import { createClient } from '@/lib/supabase/server';
 
 export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const user = await getUser(); // cached — no double round-trip with child pages
   if (!user) redirect('/login');
 
-  // Lazy rollover check on every app load
+  // Cached — safe to call here even if DashboardPage calls it too
   await checkAndApplyRollover();
 
+  const supabase = await createClient();
   const { data: profile } = await supabase
     .from('users')
-    .select('*')
+    .select('id, username, avatar_url, level, xp, currency, streak_count, hp, max_hp, last_active_date, created_at, companion_id')
     .eq('id', user.id)
     .single();
 

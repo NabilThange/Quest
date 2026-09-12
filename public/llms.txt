@@ -1,0 +1,46 @@
+# Quest
+> URL: https://doquest.vercel.app
+
+Quest is a gamified habit tracker and RPG productivity web application.
+
+## What Quest Does
+
+Quest helps users build lasting daily habits by turning real-life tasks and goals into an RPG adventure. Users complete daily quests (habits and to-dos), earn XP and gold, level up companions, and engage in turn-based battles.
+
+## Key Features
+
+- **Daily Habit Tracking**: Users set recurring daily habits ("quests") and check them off each day
+- **Streak System**: Consecutive daily completions build streaks that reward consistency
+- **RPG Companions**: Each user has a companion creature that levels up as habits are completed
+- **Battle Arena**: Complete quests to earn battle cards; use them in turn-based battles against wild creatures
+- **XP & Leveling**: Completing quests earns XP; reaching XP thresholds levels up the user and companion
+- **Gold & Rewards Shop**: Gold earned from quests can be spent on cosmetic items and power-ups
+- **Leaderboard**: Compare streaks and levels with other Quest users
+- **AI Coach**: An AI-powered coach provides personalized habit advice and encouragement
+- **To-Do Quests**: One-off tasks alongside daily habits, with optional due dates
+
+## Target Users
+
+People who want to build consistent daily habits and routines but are motivated by game mechanics, progress tracking, and visual feedback. Particularly effective for students, remote workers, and people building fitness, reading, or learning habits.
+
+## Technology
+
+- Next.js 14 (App Router) with React Server Components
+- Supabase for authentication, database, and real-time features
+- Deployed as a full-stack web application
+
+## Content
+
+The Quest blog covers:
+- Evidence-based habit formation strategies
+- The science of gamification and motivation
+- Productivity systems and frameworks
+- How to use streaks, XP, and game mechanics to build real habits
+
+## Structured Data
+
+Quest publishes JSON-LD structured data on all pages (WebApplication and Article schemas).
+
+## Contact
+
+See /humans.txt for team credits.

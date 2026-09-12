@@ -1,0 +1,16 @@
+/* TEAM */
+Developer: Nabil Thange
+Location: Mumbai, India
+Twitter: @NabilThange
+
+/* SITE */
+Site: https://doquest.vercel.app
+Last update: 2026/09
+Language: English
+Doctype: HTML5
+IDE: VS Code
+Standards: WCAG 2.1 AA
+
+/* THANKS */
+Built with: Next.js, Supabase, Framer Motion, Tailwind CSS
+Hosted on: Vercel

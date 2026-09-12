@@ -40,6 +40,18 @@ export function playSfx(src: string, volume = 0.4): void {
   }
 }
 
+/** Preload critical SFX so first interaction has zero latency */
+export function preloadCriticalSfx(): void {
+  if (typeof window === 'undefined') return;
+  const critical = [
+    '/assets/audio/sfx/nav.mp3',
+    '/assets/audio/sfx/quest-complete.mp3',
+    '/assets/audio/sfx/coin.ogg',
+    '/assets/audio/sfx/level-up.mp3',
+  ];
+  for (const src of critical) getAudio(src);
+}
+
 /** Navigation & UI click */
 export function playNavSound(): void {
   playSfx('/assets/audio/sfx/nav.mp3', 0.25);
@@ -52,7 +64,7 @@ export function playQuestCompleteSound(): void {
 
 /** Coin / gold drop */
 export function playCoinSound(): void {
-  playSfx('/assets/audio/sfx/coin.wav', 0.35);
+  playSfx('/assets/audio/sfx/coin.ogg', 0.35);
 }
 
 /** Player or companion level up */
@@ -70,13 +82,13 @@ export function playAttackSound(moveNameOrType?: string): void {
   const query = moveNameOrType.toLowerCase();
 
   if (query.includes('shock') || query.includes('overload') || query.includes('intellect') || query.includes('thunder')) {
-    playSfx('/assets/audio/sfx/attack-thunder.wav', 0.45);
+    playSfx('/assets/audio/sfx/attack-thunder.ogg', 0.45);
   } else if (query.includes('quake') || query.includes('guard break') || query.includes('discipline') || query.includes('earth')) {
-    playSfx('/assets/audio/sfx/attack-earth.wav', 0.45);
+    playSfx('/assets/audio/sfx/attack-earth.ogg', 0.45);
   } else if (query.includes('confuse') || query.includes('flash') || query.includes('creativity') || query.includes('wind')) {
-    playSfx('/assets/audio/sfx/attack-wind.wav', 0.4);
+    playSfx('/assets/audio/sfx/attack-wind.ogg', 0.4);
   } else if (query.includes('energy') || query.includes('charge')) {
-    playSfx('/assets/audio/sfx/attack-charge.wav', 0.4);
+    playSfx('/assets/audio/sfx/attack-charge.ogg', 0.4);
   } else {
     // Tackle, Slam, Strength, physical
     playSfx('/assets/audio/sfx/attack-slash.mp3', 0.4);
@@ -90,7 +102,7 @@ export function playDamageSound(): void {
 
 /** Wild encounter defeated / captured + announcer voiceover */
 export function playVictorySound(): void {
-  playSfx('/assets/audio/sfx/enemy-death.wav', 0.45);
+  playSfx('/assets/audio/sfx/enemy-death.ogg', 0.45);
   setTimeout(() => {
     playSfx('/assets/audio/sfx/you-win.ogg', 0.55);
   }, 450);
@@ -103,5 +115,5 @@ export function playHealSound(): void {
 
 /** Shop item purchase */
 export function playShopSound(): void {
-  playSfx('/assets/audio/sfx/shop-buy.wav', 0.4);
+  playSfx('/assets/audio/sfx/shop-buy.ogg', 0.4);
 }

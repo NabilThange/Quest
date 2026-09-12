@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { playNavSound } from '@/lib/sound';
+import { playNavSound, preloadCriticalSfx } from '@/lib/sound';
 
 export function NavSoundListener() {
   const pathname = usePathname();
@@ -11,6 +11,7 @@ export function NavSoundListener() {
   useEffect(() => {
     if (isFirstMount.current) {
       isFirstMount.current = false;
+      preloadCriticalSfx(); // warm up Audio objects so first sound has no latency
       return;
     }
     playNavSound();

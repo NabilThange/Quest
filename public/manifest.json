@@ -1,0 +1,31 @@
+{
+  "name": "Quest — Gamified Habit Tracker",
+  "short_name": "Quest",
+  "description": "Turn your daily habits into an RPG adventure. Build streaks, level up companions, and achieve real goals.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#f5c518",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "lifestyle", "games"],
+  "screenshots": [
+    {
+      "src": "/og-image.jpg",
+      "sizes": "1512x755",
+      "type": "image/jpeg"
+    }
+  ]
+}

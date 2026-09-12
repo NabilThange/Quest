@@ -8,7 +8,7 @@ interface AudioControllerProps {
   src?: string;
 }
 
-export function AudioController({ play, src = '/assets/audio/battle-music.mp3' }: AudioControllerProps) {
+export function AudioController({ play, src = '/assets/audio/battle-music.ogg' }: AudioControllerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [muted, setMuted] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);

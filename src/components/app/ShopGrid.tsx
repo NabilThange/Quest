@@ -7,6 +7,7 @@ import type { ShopItem } from '@/types';
 import { cn } from '@/lib/utils';
 import toast from 'react-hot-toast';
 import { ShoppingBag, CheckCircle2 } from 'lucide-react';
+import { playShopSound } from '@/lib/sound';
 
 interface ShopGridProps {
   items: ShopItem[];
@@ -37,6 +38,7 @@ export function ShopGrid({ items, ownedIds, currency }: ShopGridProps) {
       setLocalOwned((prev) => { const s = new Set(prev); s.delete(item.id); return s; });
       setLocalCurrency((prev) => prev + item.cost);
     } else {
+      playShopSound();
       toast.success(`${item.icon ?? '📦'} ${item.name} unlocked!`);
       router.refresh();
     }

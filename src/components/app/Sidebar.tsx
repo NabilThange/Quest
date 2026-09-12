@@ -24,6 +24,7 @@ import { XpBar } from '@/components/ui/XpBar';
 import { HpBar } from '@/components/ui/HpBar';
 import { signOut } from '@/app/actions/auth';
 import type { User as UserProfile } from '@/types';
+import { playNavSound } from '@/lib/sound';
 
 // All desktop nav items
 const desktopNavItems = [
@@ -218,7 +219,10 @@ export function Sidebar({ profile }: SidebarProps) {
 
           <button
             type="button"
-            onClick={() => setDrawerOpen(!drawerOpen)}
+            onClick={() => {
+              playNavSound();
+              setDrawerOpen(!drawerOpen);
+            }}
             className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-card text-text-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-cyan/50 transition-colors"
             aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={drawerOpen}

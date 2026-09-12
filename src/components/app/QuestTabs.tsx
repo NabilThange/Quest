@@ -5,6 +5,7 @@ import type { Task, TaskType } from '@/types';
 import { TaskList } from '@/components/app/TaskList';
 import { AddTaskForm } from '@/components/app/AddTaskForm';
 import { cn, getTodayString } from '@/lib/utils';
+import { playNavSound } from '@/lib/sound';
 
 interface QuestTabsProps {
   tasks: Task[];
@@ -64,7 +65,10 @@ export function QuestTabs({ tasks }: QuestTabsProps) {
           return (
             <button
               key={t.id}
-              onClick={() => setTab(t.id)}
+              onClick={() => {
+                if (tab !== t.id) playNavSound();
+                setTab(t.id);
+              }}
               className={cn(
                 'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap',
                 isActive

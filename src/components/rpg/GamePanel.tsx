@@ -11,6 +11,7 @@ import type { GameView } from './GameSection';
 import { CreatureSprite } from './CreatureSprite';
 import { BattleArena, VitalBar } from './BattleArena';
 import { AudioController } from '@/components/ui/AudioController';
+import { playAttackSound, playDamageSound, playVictorySound, playHealSound, playNavSound } from '@/lib/sound';
 
 type ActionInput = { id?: string; species?: number; request?: string; encounter?: string };
 const titles: Record<GameView, [string, string]> = {
@@ -52,7 +53,17 @@ export function GamePanel({ initial, view }: { initial: GameState; view: GameVie
         if (result.turn) {
           setTurn(result.turn);
           setMessage(result.turn.captured ? 'Captured! +25 companion XP and +15 gold.' : `${result.turn.damage_dealt} damage dealt. ${result.turn.counter_damage} counter damage.`);
+          if (result.turn.captured) {
+            playVictorySound();
+          } else if (result.turn.counter_damage > 0) {
+            setTimeout(() => playDamageSound(), 350);
+          }
         } else if (action !== 'refresh') {
+          if (action === 'rest') {
+            playHealSound();
+          } else {
+            playNavSound();
+          }
           setMessage(action === 'choose' ? 'Your journey begins. Complete a quest to earn your first card.' : 'Your companion is ready.');
           toast.success(action === 'switch' ? 'Active companion changed.' : action === 'choose' ? 'Welcome to your lodge!' : 'Fully healed.');
         }
@@ -70,6 +81,9 @@ export function GamePanel({ initial, view }: { initial: GameState; view: GameVie
 
   function attack(cardId: string) {
     if (busyRef.current || retry || !game.encounter) return;
+    const card = game.cards.find(c => c.id === cardId);
+    const move = game.moves.find(m => m.id === card?.move_id);
+    playAttackSound(move?.name || move?.type);
     const input = { id: cardId, encounter: game.encounter.id, request: crypto.randomUUID() };
     attempt.current = input;
     void run('attack', input);

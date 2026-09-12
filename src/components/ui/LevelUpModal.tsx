@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
+import { playLevelUpSound } from '@/lib/sound';
 
 interface LevelUpModalProps {
   show: boolean;
@@ -12,6 +13,7 @@ interface LevelUpModalProps {
 export function LevelUpModal({ show, level, onClose }: LevelUpModalProps) {
   useEffect(() => {
     if (show) {
+      playLevelUpSound();
       const timer = setTimeout(onClose, 3500);
       return () => clearTimeout(timer);
     }

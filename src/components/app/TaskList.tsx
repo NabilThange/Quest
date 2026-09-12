@@ -10,6 +10,7 @@ import type { Attribute, Difficulty, Task } from '@/types';
 import { Trash2, CheckCircle2, Circle, Flame, Pencil } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
+import { playQuestCompleteSound, playCoinSound, playLevelUpSound } from '@/lib/sound';
 
 interface TaskListProps { tasks: Task[]; emptyMessage?: string }
 
@@ -39,6 +40,13 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
         const text = `+${result.xpGained} XP · +${result.currencyGained} gold · +${result.cardsGained} ${result.cardName} ${result.cardsGained === 1 ? 'card' : 'cards'}${result.companionLeveledUp ? ` · Companion reached level ${result.companionLevel}!` : ''}`;
         setReward({ id: task.id, text });
         toast.success(text, { icon: '✦', duration: 4500 });
+        playQuestCompleteSound();
+        if (result.currencyGained > 0) {
+          setTimeout(() => playCoinSound(), 200);
+        }
+        if (result.leveledUp || result.companionLeveledUp) {
+          setTimeout(() => playLevelUpSound(), 450);
+        }
         if (result.leveledUp) setLevelUp({ show: true, level: result.newLevel ?? 1 });
         router.refresh();
       }

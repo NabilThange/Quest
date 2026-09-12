@@ -14,12 +14,13 @@ const config: Config = {
         brand: { cyan: rgb('primary'), purple: '#735189', pink: '#99516d', gold: '#806021', green: '#426644', red: '#a84032' },
         text: { primary: rgb('foreground'), secondary: rgb('muted'), muted: rgb('muted') },
         border: { DEFAULT: rgb('border'), bright: rgb('border') },
+        'hero-subtitle': 'hsl(var(--hero-subtitle))',
         red: { 400: '#a84032' }, orange: { 400: '#955014' }, yellow: { 400: '#7a601f' },
         green: { 400: '#426644' }, blue: { 400: '#345d8c' }, purple: { 400: '#735189' },
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        serif: ['var(--font-playfair)', 'Georgia', 'serif'],
+        sans: ['"Inter"', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        serif: ['"Instrument Serif"', 'var(--font-playfair)', 'Georgia', 'serif'],
         mono: ['var(--font-jetbrains)', 'monospace'],
       },
       animation: {

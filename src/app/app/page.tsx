@@ -24,7 +24,6 @@ export default async function DashboardPage() {
   const totalDailies = dailies?.length ?? 0;
 
   return <div className="space-y-8 pb-24 lg:pb-0">
-    <GameSection view="lodge" />
     <OverworldBanner
       completedTasks={completedDailies}
       totalTasks={totalDailies}
@@ -36,5 +35,6 @@ export default async function DashboardPage() {
       <TaskList tasks={dailies ?? []} emptyMessage="No daily quests yet. Plant a small intention in the Quests tab." />
     </section>
     {(todos ?? []).length > 0 && <section aria-label="Due today" className="space-y-4"><h2 className="font-serif text-2xl">On your path today</h2><TaskList tasks={todos ?? []} /></section>}
+    <GameSection view="lodge" />
   </div>;
 }

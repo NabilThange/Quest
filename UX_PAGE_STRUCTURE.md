@@ -36,19 +36,21 @@ Chronological Order (Top to Bottom):
    - Username and Level Badge (`Lv. X`).
    - XP Progress Bar (`--xp-fill` with XP needed to next level).
    - HP Vital Bar (color-coded green/yellow/red with current HP / max HP).
-3. **Primary Navigation Menu**:
-   - `Lodge` (`/app`, exact match)
-   - `Quests` (`/app/todos`)
-   - `Battle` (`/app/battle`)
-   - `Pokédex` (`/app/pokedex`)
-   - `Team` (`/app/team`)
-   - `Habits` (`/app/habits`)
-   - `Calendar` (`/app/calendar`)
-   - `Shop` (`/app/rewards`)
-   - `Leaderboard` (`/app/leaderboard`)
-   - `Profile` (`/app/profile`)
+3. **Primary Navigation Menu (Visual Chunking into 3 Clusters)**:
+   - **Core Loop**:
+     - `Lodge` (`/app`, exact match)
+     - `Quests` (`/app/todos`)
+     - `Habits` (`/app/habits`)
+   - **Adventures**:
+     - `Battle` (`/app/battle`)
+     - `Team` (`/app/team`)
+     - `Pokédex` (`/app/pokedex`)
+   - **Overview**:
+     - `Calendar` (`/app/calendar`)
+     - `Shop` (`/app/rewards`)
+     - `Leaderboard` (`/app/leaderboard`)
+     - `Profile` (`/app/profile`)
 4. **Bottom Footer Actions**:
-   - Currency Counter Badge (Coin icon + gold balance).
    - Sign Out Button (`LogOut` icon + action).
 
 ### B. Mobile Navigation (`lg:hidden`)
@@ -134,20 +136,34 @@ Chronological Order / Visual Hierarchy:
 
 *Mental Model:* The daily command center. Blends real-world daily task execution with the RPG companion lodge.
 
-### Current Chronological Order:
+### Chronological Section Order (Utility First, Peak-End):
 
 ```
-[ Section 1: Game Lodge Section (GameSection view="lodge") ]
+[ Section 1: Daily Progress Overworld Banner ]
                ↓
-[ Section 2: Daily Progress Overworld Banner ]
+[ Section 2: Today's Daily Quests Section ]
                ↓
-[ Section 3: Today's Daily Quests Section ]
+[ Section 3: "On Your Path Today" (Due Todos Section) ]
                ↓
-[ Section 4: "On Your Path Today" (Due Todos Section) ]
+[ Section 4: Game Lodge Section (GameSection view="lodge") ]
 ```
 
 ### Detailed Elements in Each Section:
-1. **Section 1: Game Lodge (`GamePanel.tsx`)**
+1. **Section 1: Daily Progress Overworld Banner (`OverworldBanner.tsx`)**
+   - Pixel art landscape banner.
+   - Numerical counter: `X of Y daily quests completed`.
+   - Progress bar showing daily completion percentage.
+   - Streak counter badge (`🔥 X day streak`).
+2. **Section 2: Today's Daily Quests (`TaskList.tsx`)**
+   - Header: `"Small steps, real progress."` + `"Add quest"` link (routes to `/app/todos`).
+   - Instructional subtext: *"Finish a quest to earn companion XP, gold, and a move card."*
+   - List of Dailies: Each item has checkbox (completion trigger with audio fanfare), quest title, attribute badge (`Strength`, `Intellect`, `Discipline`, `Creativity`), difficulty badge, and edit/delete actions.
+   - Empty state if no dailies exist.
+3. **Section 3: "On Your Path Today" (Due Todos)**
+   - *Conditional*: Renders only if user has one-off todos due today or overdue.
+   - Header: `"On your path today"`.
+   - List of up to 5 prioritized todos (`TaskList.tsx`).
+4. **Section 4: Game Lodge (`GamePanel.tsx`)**
    - Header bar: Title (`The Lodge`), subtitle (`Rest companions and choose your active partner`), and **Music/SFX Mute Toggle Button** (`AudioController`).
    - Active Companion Showcase:
      - Companion pixel art sprite + nickname + species name.
@@ -156,20 +172,6 @@ Chronological Order / Visual Hierarchy:
      - Action button: `"Rest at Lodge"` (restores companion HP once per UTC day).
    - Wild Encounter Alert (conditional): If a wild Pokémon has appeared today, renders a quick-travel alert button: `"A wild creature appeared! Enter battle →"`.
    - Starter Selection (only shown for first-time users before companion selection).
-2. **Section 2: Daily Progress Overworld Banner (`OverworldBanner.tsx`)**
-   - Pixel art landscape banner.
-   - Numerical counter: `X of Y daily quests completed`.
-   - Progress bar showing daily completion percentage.
-   - Streak counter badge (`🔥 X day streak`).
-3. **Section 3: Today's Daily Quests (`TaskList.tsx`)**
-   - Header: `"Small steps, real progress."` + `"Add quest"` link (routes to `/app/todos`).
-   - Instructional subtext: *"Finish a quest to earn companion XP, gold, and a move card."*
-   - List of Dailies: Each item has checkbox (completion trigger with audio fanfare), quest title, attribute badge (`Strength`, `Intellect`, `Discipline`, `Creativity`), difficulty badge, and edit/delete actions.
-   - Empty state if no dailies exist.
-4. **Section 4: "On Your Path Today" (Due Todos)**
-   - *Conditional*: Renders only if user has one-off todos due today or overdue.
-   - Header: `"On your path today"`.
-   - List of up to 5 prioritized todos (`TaskList.tsx`).
 
 ---
 
@@ -177,16 +179,16 @@ Chronological Order / Visual Hierarchy:
 
 *Mental Model:* The comprehensive task management hub for all actionable items (To-dos, Dailies, and Habits).
 
-### Current Chronological Order:
+### Chronological Section Order (Hick's & Jakob's Law):
 
 ```
 [ Section 1: Page Header ]
                ↓
-[ Section 2: AI Habit Coach Promotion Banner ]
+[ Section 2: QuestTabs - Filter Tabs Bar ]
                ↓
-[ Section 3: QuestTabs - Filter Tabs Bar ]
+[ Section 3: Add Task Form (Contextual) ]
                ↓
-[ Section 4: Add Task Form (Contextual) ]
+[ Section 4: AI Habit Coach Promotion Banner ]
                ↓
 [ Section 5: Active Quests Section ]
                ↓
@@ -197,17 +199,14 @@ Chronological Order / Visual Hierarchy:
 1. **Section 1: Page Header**
    - H1: `"Quests"`.
    - Subtitle: `"Daily intentions, habits, and one-off goals."`.
-2. **Section 2: AI Habit Coach Promotion Banner**
-   - Clickable card linking to `/onboarding`.
-   - Text: `"AI Habit Coach — Answer a few questions, get a personalised quest list."` + chevron icon.
-3. **Section 3: Filter Tabs Bar (`QuestTabs.tsx`)**
+2. **Section 2: Filter Tabs Bar (`QuestTabs.tsx`)**
    - 4 filter pill buttons with live count badges:
      - `All (Total Count)`
      - `To-Dos (Count)`
      - `Dailies (Count)`
      - `Habits (Count)`
    - Switching tabs plays audio navigation feedback.
-4. **Section 4: Add Task Form (`AddTaskForm.tsx`)**
+3. **Section 3: Add Task Form (`AddTaskForm.tsx`)**
    - Collapsed state: Full-width button `"+ Add quest"`.
    - Expanded state modal/card:
      - Quest Title input field.
@@ -216,6 +215,10 @@ Chronological Order / Visual Hierarchy:
      - Attribute dropdown: `None`, `Strength`, `Intellect`, `Discipline`, `Creativity`.
      - Due Date picker (visible when type is `Todo`).
      - Action buttons: `"Save"` and `"Cancel"`.
+4. **Section 4: AI Habit Coach Promotion Banner**
+   - Clickable card linking to `/onboarding`.
+   - Text: `"AI Habit Coach — Answer a few questions, get a personalised quest list."` + chevron icon.
+   - Sits right above active tasks as a progressive disclosure ramp.
 5. **Section 5: Active Quests Section**
    - Header: `"Active (Count)"`.
    - Interactive list (`TaskList.tsx`):
@@ -234,27 +237,27 @@ Chronological Order / Visual Hierarchy:
 
 *Mental Model:* Dedicated habit tracking page with consecutive day streak counters.
 
-### Current Chronological Order:
+### Chronological Section Order (Recognition > Creation):
 
 ```
 [ Section 1: Page Header ]
                ↓
-[ Section 2: Add Habit Form ]
+[ Section 2: Your Habits List ]
                ↓
-[ Section 3: Your Habits List ]
+[ Section 3: Add Habit Form ]
 ```
 
 ### Detailed Elements in Each Section:
 1. **Section 1: Page Header**
    - H1: `"Habits"`.
    - Subtitle: `"Earn cards once per habit per UTC day. Your streak grows with consecutive daily completions."`.
-2. **Section 2: Add Habit Form (`AddTaskForm.tsx`)**
-   - Pre-configured with `defaultType="habit"`.
-3. **Section 3: Your Habits List (`TaskList.tsx`)**
+2. **Section 2: Your Habits List (`TaskList.tsx`)**
    - Header: `"Your habits"`.
    - Items sorted by longest streak count first.
    - Displays flame icon + streak count (`🔥 X`).
    - Displays daily reset badge: `"Reward earned · resets at midnight UTC"`.
+3. **Section 3: Add Habit Form (`AddTaskForm.tsx`)**
+   - Pre-configured with `defaultType="habit"`. Sits beneath existing habits to prioritize daily check-ins.
 
 ---
 
@@ -399,12 +402,12 @@ Chronological Order / Visual Hierarchy:
 
 *Mental Model:* Intrinsic reward redemption. Spend currency earned from completing tasks on badges, themes, and lodge items.
 
-### Current Chronological Order:
+### Chronological Section Order (Endowment Effect First):
 
 ```
-[ Section 1: Game Shop Banner (GameSection view="shop") ]
+[ Section 1: Header & Currency Balance Badge ]
                ↓
-[ Section 2: Header & Currency Balance Badge ]
+[ Section 2: Game Shop Atmosphere Banner (GameSection view="shop") ]
                ↓
 [ Section 3: Grouped Shop Items Grid ]
     ├── Category A: Badges
@@ -413,12 +416,12 @@ Chronological Order / Visual Hierarchy:
 ```
 
 ### Detailed Elements in Each Section:
-1. **Section 1: Game Shop Banner**
-   - Apothecary and companion item status.
-2. **Section 2: Header**
+1. **Section 1: Header & Currency Balance**
    - Title: `"Little rewards for the journey"`.
    - Subtitle: `"Spend your hard-earned currency on cosmetics and badges."`.
-   - Gold Balance Pill: `💰 [Currency Amount]`.
+   - Gold Balance Pill: `💰 [Currency Amount]`. Visible before purchase targets to anchor spending.
+2. **Section 2: Game Shop Atmosphere Banner**
+   - Apothecary and companion item status.
 3. **Section 3: Grouped Shop Items Grid (`ShopGrid.tsx`)**
    - **Badges**: Sword (`Cyber Warrior`), Bow (`Shadow Rogue`), Orb (`Arcane Scholar`), Shield (`Iron Will`).
    - **Themes & Cosmetics**: `Gold Frame`, `Dragon Aura`.
@@ -453,14 +456,14 @@ Chronological Order / Visual Hierarchy:
 
 *Mental Model:* Identity, comprehensive vitals, account statistics, and personal inventory.
 
-### Current Chronological Order:
+### Chronological Section Order (4-Chunk Limit / Glance-then-Dig):
 
 ```
 [ Section 1: Page Title ]
                ↓
-[ Section 2: Primary Character Card (Avatar + Levels + Vitals) ]
+[ Section 2: Quick Stats 4-Card Grid ]
                ↓
-[ Section 3: Quick Stats 4-Card Grid ]
+[ Section 3: Primary Character Card (Avatar + Levels + Vitals) ]
                ↓
 [ Section 4: Acquired Inventory Grid ]
                ↓
@@ -470,7 +473,13 @@ Chronological Order / Visual Hierarchy:
 ### Detailed Elements in Each Section:
 1. **Section 1: Title**
    - `"Character Sheet"`.
-2. **Section 2: Primary Character Card**
+2. **Section 2: Stats Grid (4 Cards)**
+   - Card 1: `Level` (Zap icon + level number).
+   - Card 2: `Currency` (Coin icon + gold amount).
+   - Card 3: `HP` (Shield icon + current / max HP).
+   - Card 4: `Streak` (Flame icon + streak days).
+   - *Provides an instant 4-chunk working memory summary before deep inspection.*
+3. **Section 3: Primary Character Card**
    - Large avatar initial circle.
    - Username, Level Badge, and Title rank (`Novice`, `Apprentice`, `Journeyman`, `Expert`, `Master`).
    - Full XP Bar + numerical `"X XP to next level"`.

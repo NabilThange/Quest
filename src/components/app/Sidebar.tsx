@@ -26,18 +26,33 @@ import { signOut } from '@/app/actions/auth';
 import type { User as UserProfile } from '@/types';
 import { playNavSound } from '@/lib/sound';
 
-// All desktop nav items
-const desktopNavItems = [
-  { href: '/app', label: 'Lodge', icon: LayoutDashboard, exact: true },
-  { href: '/app/todos', label: 'Quests', icon: CheckSquare },
-  { href: '/app/battle', label: 'Battle', icon: Sword },
-  { href: '/app/pokedex', label: 'Pokédex', icon: BookOpen },
-  { href: '/app/team', label: 'Team', icon: PawPrint },
-  { href: '/app/habits', label: 'Habits', icon: Flame },
-  { href: '/app/calendar', label: 'Calendar', icon: Calendar },
-  { href: '/app/rewards', label: 'Shop', icon: ShoppingBag },
-  { href: '/app/leaderboard', label: 'Leaderboard', icon: Trophy },
-  { href: '/app/profile', label: 'Profile', icon: User },
+// Desktop nav items chunked into 3 visually distinct clusters (Core Loop, Adventures, Overview)
+const desktopNavGroups = [
+  {
+    label: 'Core Loop',
+    items: [
+      { href: '/app', label: 'Lodge', icon: LayoutDashboard, exact: true },
+      { href: '/app/todos', label: 'Quests', icon: CheckSquare },
+      { href: '/app/habits', label: 'Habits', icon: Flame },
+    ],
+  },
+  {
+    label: 'Adventures',
+    items: [
+      { href: '/app/battle', label: 'Battle', icon: Sword },
+      { href: '/app/team', label: 'Team', icon: PawPrint },
+      { href: '/app/pokedex', label: 'Pokédex', icon: BookOpen },
+    ],
+  },
+  {
+    label: 'Overview',
+    items: [
+      { href: '/app/calendar', label: 'Calendar', icon: Calendar },
+      { href: '/app/rewards', label: 'Shop', icon: ShoppingBag },
+      { href: '/app/leaderboard', label: 'Leaderboard', icon: Trophy },
+      { href: '/app/profile', label: 'Profile', icon: User },
+    ],
+  },
 ];
 
 // 4 core daily loop items in the mobile bottom dock
@@ -131,33 +146,40 @@ export function Sidebar({ profile }: SidebarProps) {
         )}
 
         {/* Nav links */}
-        <nav className="flex-1 p-3 space-y-1" aria-label="App sections">
-          {desktopNavItems.map((item) => {
-            const active = isPathActive(item.href, item.exact);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150',
-                  'focus:outline-none focus:ring-2 focus:ring-brand-cyan/50',
-                  active
-                    ? 'bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20'
-                    : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated'
-                )}
-                aria-current={active ? 'page' : undefined}
-              >
-                <item.icon className="w-4 h-4 flex-shrink-0" />
-                {item.label}
-                {active && (
-                  <motion.div
-                    layoutId="sidebar-indicator"
-                    className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-cyan"
-                  />
-                )}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 p-3 space-y-4" aria-label="App sections">
+          {desktopNavGroups.map((group) => (
+            <div key={group.label} className="space-y-1">
+              <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-text-muted select-none">
+                {group.label}
+              </p>
+              {group.items.map((item) => {
+                const active = isPathActive(item.href, item.exact);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150',
+                      'focus:outline-none focus:ring-2 focus:ring-brand-cyan/50',
+                      active
+                        ? 'bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20'
+                        : 'text-text-secondary hover:text-text-primary hover:bg-bg-elevated'
+                    )}
+                    aria-current={active ? 'page' : undefined}
+                  >
+                    <item.icon className="w-4 h-4 flex-shrink-0" />
+                    {item.label}
+                    {active && (
+                      <motion.div
+                        layoutId="sidebar-indicator"
+                        className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-cyan"
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         {/* Sign out */}

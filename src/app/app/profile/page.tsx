@@ -30,6 +30,18 @@ export default async function ProfilePage() {
     <div className="space-y-8 pb-20 lg:pb-0">
       <h1 className="text-2xl font-bold">Character Sheet</h1>
 
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {stats.map((s) => (
+          <div key={s.label} className="card">
+            <div className="flex items-center gap-2 text-text-secondary text-xs mb-1">
+              {s.icon}<span>{s.label}</span>
+            </div>
+            <div className={`text-xl font-bold font-mono ${s.color}`}>{s.value}</div>
+          </div>
+        ))}
+      </div>
+
       {/* Character card */}
       <div className="card-elevated">
         <div className="flex flex-wrap items-center gap-5 mb-6">
@@ -47,18 +59,6 @@ export default async function ProfilePage() {
           <p className="text-xs text-text-muted text-right">{xpToNextLevel(profile.level) - profile.xp} XP to next level</p>
           <HpBar hp={profile.hp} maxHp={profile.max_hp} />
         </div>
-      </div>
-
-      {/* Stats grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {stats.map((s) => (
-          <div key={s.label} className="card">
-            <div className="flex items-center gap-2 text-text-secondary text-xs mb-1">
-              {s.icon}<span>{s.label}</span>
-            </div>
-            <div className={`text-xl font-bold font-mono ${s.color}`}>{s.value}</div>
-          </div>
-        ))}
       </div>
 
       {/* Inventory */}

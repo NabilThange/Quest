@@ -22,10 +22,10 @@ export default async function HabitsPage() {
         <h1 className="text-2xl font-bold">Habits</h1>
         <p className="text-text-secondary mt-1">Earn cards once per habit per UTC day. Your streak grows with consecutive daily completions.</p>
       </div>
-      <AddTaskForm defaultType="habit" />
       <section aria-label="Your habits">
-        <TaskList tasks={habits ?? []} emptyMessage="No habits tracked yet. Add your first habit above!" />
+        <TaskList tasks={habits ?? []} emptyMessage="No habits tracked yet. Add your first habit below!" />
       </section>
+      <AddTaskForm defaultType="habit" />
     </div>
   );
 }

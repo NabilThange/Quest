@@ -18,7 +18,6 @@ export default async function RewardsPage() {
 
   return (
     <div className="space-y-8 pb-20 lg:pb-0">
-      <GameSection view="shop" />
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-serif">Little rewards for the journey</h2>
@@ -29,6 +28,7 @@ export default async function RewardsPage() {
           <span className="font-bold font-mono text-brand-gold">{profile?.currency ?? 0}</span>
         </div>
       </div>
+      <GameSection view="shop" />
       <ShopGrid items={items ?? []} ownedIds={ownedIds} currency={profile?.currency ?? 0} />
     </div>
   );

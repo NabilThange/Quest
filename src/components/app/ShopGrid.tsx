@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { purchaseItem } from '@/app/actions/shop';
 import type { ShopItem } from '@/types';
 import { cn } from '@/lib/utils';
@@ -14,6 +15,7 @@ interface ShopGridProps {
 }
 
 export function ShopGrid({ items, ownedIds, currency }: ShopGridProps) {
+  const router = useRouter();
   const [buying, setBuying] = useState<string | null>(null);
   const [localOwned, setLocalOwned] = useState<Set<string>>(ownedIds);
   const [localCurrency, setLocalCurrency] = useState(currency);
@@ -36,6 +38,7 @@ export function ShopGrid({ items, ownedIds, currency }: ShopGridProps) {
       setLocalCurrency((prev) => prev + item.cost);
     } else {
       toast.success(`${item.icon ?? '📦'} ${item.name} unlocked!`);
+      router.refresh();
     }
     setBuying(null);
   }

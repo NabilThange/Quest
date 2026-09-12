@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
 import { completeTask, deleteTask, updateTask } from '@/app/actions/tasks';
 import { LevelUpModal } from '@/components/ui/LevelUpModal';
@@ -13,6 +14,7 @@ import { cn } from '@/lib/utils';
 interface TaskListProps { tasks: Task[]; emptyMessage?: string }
 
 export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskListProps) {
+  const router = useRouter();
   const [pending, setPending] = useState<string | null>(null);
   const lock = useRef(false);
   const [reward, setReward] = useState<{ id: string; text: string } | null>(null);
@@ -38,6 +40,7 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
         setReward({ id: task.id, text });
         toast.success(text, { icon: '✦', duration: 4500 });
         if (result.leveledUp) setLevelUp({ show: true, level: result.newLevel ?? 1 });
+        router.refresh();
       }
     } catch {
       toast.error('Connection interrupted. Refresh to check whether your reward was saved.');
@@ -51,6 +54,7 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
     try {
       const result = await deleteTask(taskId);
       if (result.error) toast.error(result.error);
+      else router.refresh();
     } catch { toast.error('Could not delete this quest. Try again.'); }
     finally { lock.current = false; setPending(null); }
   }
@@ -68,7 +72,7 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
         attribute: attribute || null, due_date: String(data.get('due_date') ?? ''),
       });
       if (result.error) toast.error(result.error);
-      else setEditing(null);
+      else { setEditing(null); router.refresh(); }
     } catch { toast.error('Could not save this quest. Try again.'); }
     finally { lock.current = false; setPending(null); }
   }
@@ -99,6 +103,7 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
                 <div className="min-w-0 flex-1">
                   <p className={cn('font-medium text-sm', done && 'line-through text-text-secondary')}>{task.title}</p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
+                    <span className="text-xs px-2 py-0.5 rounded-full border border-border bg-secondary capitalize text-text-secondary">{task.type}</span>
                     {task.attribute && <span className={cn('text-xs px-2 py-0.5 rounded-full border', ATTRIBUTE_COLORS[task.attribute])}>{task.attribute}</span>}
                     <span className={cn('text-xs px-2 py-0.5 rounded-full border capitalize', DIFFICULTY_COLORS[task.difficulty])}>{task.difficulty}</span>
                     {task.type === 'habit' && task.habit_streak > 0 && <span className="flex items-center gap-1 text-xs text-orange-400"><Flame className="h-3 w-3" />{task.habit_streak}</span>}

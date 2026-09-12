@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { createTask } from '@/app/actions/tasks';
 import { Plus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -11,6 +12,7 @@ interface AddTaskFormProps {
 }
 
 export function AddTaskForm({ defaultType = 'todo' }: AddTaskFormProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState('');
@@ -33,10 +35,11 @@ export function AddTaskForm({ defaultType = 'todo' }: AddTaskFormProps) {
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success('Quest added! ⚔️');
+      toast.success('Quest added!');
       setTitle('');
       setDueDate('');
       setOpen(false);
+      router.refresh();
     }
     setLoading(false);
   }

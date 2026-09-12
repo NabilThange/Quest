@@ -258,7 +258,10 @@ export default function OnboardingCoachPage() {
         setCommitting(false);
         if (res.success) {
           setCommitted(true);
-          setTimeout(() => router.push('/app/todos'), 1200);
+          setTimeout(() => {
+            router.push('/app/todos');
+            router.refresh();
+          }, 1200);
         } else {
           setCommitError(res.error ?? 'Something went wrong.');
         }

@@ -59,9 +59,19 @@ export function BattleArena({ game, busy, turn, expired, onAttack }: {
             </div>
           </div>
           <div className="relative flex flex-col items-center gap-4">
-            <motion.div key={turn?.id ?? 'idle'} animate={!reduced && turn ? { x: [0, -8, 8, -4, 0] } : { x: 0 }}>
+            <motion.div key={turn?.id ?? 'idle'} animate={!reduced && turn ?
+              lastMove?.type === 'Discipline' ? { y: [0, -6, 3, -3, 0] } :
+              lastMove?.type === 'Creativity' ? { rotate: [0, -6, 6, 0] } :
+              { x: [0, -8, 8, -4, 0] } : { x: 0 }}>
               <CreatureSprite species={opponent} silhouette={encounter.status === 'fled' || expired} />
             </motion.div>
+            {!reduced && turn && <div key={`sparks-${turn.id}`} className="pointer-events-none absolute left-1/2 top-12" aria-hidden="true">
+              {[[0,-60],[45,-40],[60,0],[35,40],[-35,40],[-60,-15]].map(([x,y], index) =>
+                <motion.span key={index} className="absolute text-2xl text-primary" initial={{ opacity: 1, x: 0, y: 0, scale: 0.5 }}
+                  animate={{ opacity: 0, x, y, scale: 1.5 }} transition={{ duration: 0.8, delay: index * 0.03 }}>
+                  {symbols[lastMove?.type ?? 'Energy']}
+                </motion.span>)}
+            </div>}
             <AnimatePresence>
               {turn && <motion.div key={turn.id} initial={{ opacity: 1, y: 0 }} animate={{ opacity: 0, y: reduced ? 0 : -55 }}
                 transition={{ duration: 1.8 }} className="pointer-events-none absolute -top-3 rounded-full bg-primary px-4 py-2 font-mono text-primary-foreground" aria-hidden="true">

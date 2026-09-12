@@ -37,7 +37,7 @@ export async function deleteTask(taskId: string) {
 }
 
 export async function updateTask(taskId: string, updates: Partial<{
-  title: string; difficulty: Difficulty; attribute: Attribute; due_date: string;
+  title: string; difficulty: Difficulty; attribute: Attribute | null; due_date: string;
 }>) {
   if (updates.title !== undefined && !validTitle(updates.title)) return { error: 'Use a quest title between 1 and 200 characters.' };
   const supabase = await createClient();

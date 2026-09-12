@@ -65,7 +65,7 @@ export function TaskList({ tasks, emptyMessage = 'No tasks here yet.' }: TaskLis
       const attribute = data.get('attribute') as Attribute;
       const result = await updateTask(editing.id, {
         title: String(data.get('title') ?? ''), difficulty: data.get('difficulty') as Difficulty,
-        ...(attribute ? { attribute } : {}), due_date: String(data.get('due_date') ?? ''),
+        attribute: attribute || null, due_date: String(data.get('due_date') ?? ''),
       });
       if (result.error) toast.error(result.error);
       else setEditing(null);

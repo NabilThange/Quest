@@ -27,6 +27,7 @@ export interface Task {
   recurrence_rule: string | null;
   is_completed: boolean;
   habit_streak: number;
+  last_rewarded_at?: string | null;
   created_at: string;
 }
 

@@ -82,7 +82,7 @@ export function GamePanel({ initial, view }: { initial: GameState; view: GameVie
   const cardCount = game.cards.filter(c => c.pokemon_id === active?.id).reduce((sum, c) => sum + c.quantity, 0);
   const expired = Boolean(encounter && now !== null && new Date(encounter.expires_at).getTime() <= now && encounter.status === 'active');
   const today = now === null ? null : new Date(now).toISOString().slice(0, 10);
-  const restUsed = game.profile.last_rest_date === today;
+  const restUsed = today !== null && game.profile.last_rest_date === today;
 
   return (
     <MotionConfig reducedMotion="user">

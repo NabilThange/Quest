@@ -274,7 +274,7 @@ export default function QuestLandingPage() {
                 />
               </div>
               <span className="text-muted-foreground text-sm font-normal">
-                10,000+ daily quests conquered
+                Build consistency, one quest at a time
               </span>
             </motion.div>
 

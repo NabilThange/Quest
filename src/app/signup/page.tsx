@@ -51,7 +51,7 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
             <span className="text-3xl">⚔️</span>
-            <span className="font-bold text-xl text-brand-cyan">Life RPG</span>
+            <span className="font-bold text-xl text-brand-cyan">Quest</span>
           </Link>
           <h1 className="text-2xl font-bold text-text-primary">Create your character</h1>
           <p className="text-text-secondary mt-1">Begin your adventure today</p>

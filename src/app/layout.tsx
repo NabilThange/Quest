@@ -16,21 +16,21 @@ const jetbrainsMono = JetBrains_Mono({
 const playfair = Playfair_Display({ subsets: ['latin'], variable: '--font-playfair' });
 
 export const metadata: Metadata = {
-  title: 'Life RPG — Turn Your Life Into an Adventure',
+  title: 'Quest — Master Your Habits & Goals',
   description:
-    'Life RPG gamifies your daily habits and tasks. Earn XP, level up your character, build streaks, and unlock rewards — all by completing real-world goals.',
-  keywords: ['productivity', 'habit tracker', 'RPG', 'gamification', 'tasks', 'life goals'],
+    'Quest brings your scrambled life into organized focus. Track daily to-dos, build consistent habits, level up, and achieve greatness.',
+  keywords: ['productivity', 'habit tracker', 'to-do list', 'consistency', 'tasks', 'life goals', 'quest'],
   openGraph: {
-    title: 'Life RPG — Turn Your Life Into an Adventure',
+    title: 'Quest — Master Your Habits & Goals',
     description:
-      'Gamify your habits and tasks. Earn XP, level up, and unlock rewards by completing real-world goals.',
+      'Organize your life, stay consistent, and turn daily habits into steady greatness.',
     type: 'website',
     url: process.env.NEXT_PUBLIC_APP_URL,
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Life RPG — Turn Your Life Into an Adventure',
-    description: 'Gamify your habits and tasks. Earn XP, level up, and unlock rewards.',
+    title: 'Quest — Master Your Habits & Goals',
+    description: 'Organize your life, stay consistent, and turn daily habits into steady greatness.',
   },
 };
 

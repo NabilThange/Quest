@@ -161,8 +161,8 @@
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
 
-/* Mindloop Dark Monochrome Design System */
-.mindloop-theme {
+/* Quest Dark Monochrome Design System */
+.quest-theme, .mindloop-theme {
   --background: 0 0% 0%;
   --foreground: 0 0% 100%;
   --card: 0 0% 5%;

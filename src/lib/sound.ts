@@ -1,5 +1,5 @@
 /**
- * Life RPG Sound Engine
+ * Quest Sound Engine
  * Handles tactile sound effects (SFX) with pooling, volume balancing, and mute support.
  */
 

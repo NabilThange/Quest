@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Instagram, Linkedin, Twitter } from 'lucide-react';
+import { Instagram, Linkedin, Twitter, CheckCircle2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 // ─── Animation Pattern ────────────────────────────────────────────────────────
@@ -139,23 +140,23 @@ function HlsVideoPlayer({ src }: { src: string }) {
   );
 }
 
-// ─── Mindloop Landing Page ───────────────────────────────────────────────────
-export default function MindloopLandingPage() {
+// ─── Quest Landing Page ───────────────────────────────────────────────────────
+export default function QuestLandingPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleStartQuest = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !email.includes('@')) {
-      toast.error('Please enter a valid email address.');
-      return;
+    if (email && email.includes('@')) {
+      toast.success('Your adventure begins. Welcome to Quest.');
+      router.push(`/signup?email=${encodeURIComponent(email)}`);
+    } else {
+      router.push('/signup');
     }
-    setSubscribed(true);
-    toast.success('Welcome to Mindloop. Your journey begins.');
   };
 
   return (
-    <div className="mindloop-theme min-h-screen bg-black text-white selection:bg-white selection:text-black overflow-x-hidden font-sans">
+    <div className="quest-theme min-h-screen bg-black text-white selection:bg-white selection:text-black overflow-x-hidden font-sans">
       {/* ── 1. Navbar (fixed, transparent) ─────────────────────────────────── */}
       <header className="fixed top-0 left-0 right-0 z-50 px-8 md:px-28 py-4 flex items-center justify-between bg-transparent">
         {/* Left: Logo */}
@@ -164,7 +165,7 @@ export default function MindloopLandingPage() {
             <div className="w-3 h-3 rounded-full border border-foreground/60" />
           </div>
           <span className="font-bold text-lg tracking-tight text-foreground">
-            Mindloop
+            Quest
           </span>
         </Link>
 
@@ -173,37 +174,31 @@ export default function MindloopLandingPage() {
           aria-label="Main navigation"
           className="hidden md:flex items-center gap-4 text-sm text-muted-foreground"
         >
-          <a
-            href="#home"
-            className="hover:text-foreground transition-colors"
-          >
-            Home
+          <a href="#home" className="hover:text-foreground transition-colors">
+            Overview
           </a>
           <span className="text-muted-foreground/40 text-xs">•</span>
-          <a
-            href="#how-it-works"
-            className="hover:text-foreground transition-colors"
-          >
-            How It Works
+          <a href="#how-it-works" className="hover:text-foreground transition-colors">
+            The Problem
           </a>
           <span className="text-muted-foreground/40 text-xs">•</span>
-          <a
-            href="#philosophy"
-            className="hover:text-foreground transition-colors"
-          >
-            Philosophy
+          <a href="#philosophy" className="hover:text-foreground transition-colors">
+            Consistency
           </a>
           <span className="text-muted-foreground/40 text-xs">•</span>
-          <a
-            href="#use-cases"
-            className="hover:text-foreground transition-colors"
-          >
-            Use Cases
+          <a href="#system" className="hover:text-foreground transition-colors">
+            The System
           </a>
         </nav>
 
-        {/* Right: 3 Social Icons in liquid-glass circular buttons */}
+        {/* Right: Social icons & Sign In */}
         <div className="flex items-center gap-3">
+          <Link
+            href="/login"
+            className="hidden sm:inline-block text-xs font-medium text-text-secondary hover:text-foreground px-3 py-1.5 transition-colors"
+          >
+            Sign in
+          </Link>
           <a
             href="https://instagram.com"
             target="_blank"
@@ -263,22 +258,22 @@ export default function MindloopLandingPage() {
               <div className="flex -space-x-2">
                 <img
                   src="/avatar-1.png"
-                  alt="Subscriber 1"
+                  alt="Adventurer 1"
                   className="w-8 h-8 rounded-full border-2 border-background object-cover"
                 />
                 <img
                   src="/avatar-2.png"
-                  alt="Subscriber 2"
+                  alt="Adventurer 2"
                   className="w-8 h-8 rounded-full border-2 border-background object-cover"
                 />
                 <img
                   src="/avatar-3.png"
-                  alt="Subscriber 3"
+                  alt="Adventurer 3"
                   className="w-8 h-8 rounded-full border-2 border-background object-cover"
                 />
               </div>
               <span className="text-muted-foreground text-sm font-normal">
-                7,000+ people already subscribed
+                10,000+ daily quests conquered
               </span>
             </motion.div>
 
@@ -287,9 +282,9 @@ export default function MindloopLandingPage() {
               {...fadeUp(0.2)}
               className="text-5xl md:text-7xl lg:text-8xl font-medium tracking-[-2px] mb-6 text-foreground leading-[1.05]"
             >
-              Get{' '}
-              <span className="font-serif italic font-normal">Inspired</span>{' '}
-              with Us
+              Order Your{' '}
+              <span className="font-serif italic font-normal">Life.</span>{' '}
+              Become Great.
             </motion.h1>
 
             {/* Subtitle */}
@@ -297,22 +292,20 @@ export default function MindloopLandingPage() {
               {...fadeUp(0.3)}
               className="text-lg max-w-2xl mx-auto mb-10 text-[hsl(var(--hero-subtitle))] font-normal leading-relaxed"
             >
-              Join our feed for meaningful updates, news around technology and a
-              shared journey toward depth and direction.
+              A focused to-do list and daily habit tracker built to bring your scrambled life into calm, consistent rhythm. Follow through every day, build unstoppable momentum, and achieve greatness.
             </motion.p>
 
             {/* Email Form */}
             <motion.form
               {...fadeUp(0.4)}
-              onSubmit={handleSubscribe}
+              onSubmit={handleStartQuest}
               className="liquid-glass rounded-full p-2 max-w-lg mx-auto flex items-center gap-2 border border-white/10"
             >
               <input
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder="Enter your email to start your quest"
                 className="bg-transparent border-none outline-none px-6 py-3 text-foreground placeholder:text-muted-foreground text-sm flex-1 focus:ring-0"
               />
               <motion.button
@@ -321,13 +314,13 @@ export default function MindloopLandingPage() {
                 whileTap={{ scale: 0.98 }}
                 className="bg-foreground text-background font-semibold rounded-full px-8 py-3 text-sm tracking-wider uppercase transition-colors shrink-0"
               >
-                {subscribed ? 'Joined' : 'SUBSCRIBE'}
+                START QUEST
               </motion.button>
             </motion.form>
           </div>
         </section>
 
-        {/* ── 3. "Search has changed" Section ──────────────────────────────── */}
+        {/* ── 3. "From Scrambled Days to Mastery" Section ──────────────────── */}
         <section
           id="how-it-works"
           className="pt-52 md:pt-64 pb-6 md:pb-9 max-w-6xl mx-auto px-6 text-center"
@@ -336,23 +329,20 @@ export default function MindloopLandingPage() {
             {...fadeUp(0.1)}
             className="text-5xl md:text-7xl lg:text-8xl font-medium tracking-[-2px] mb-6 text-foreground leading-[1.05]"
           >
-            Search has{' '}
-            <span className="font-serif italic font-normal">changed.</span> Have
-            you?
+            Stop living a{' '}
+            <span className="font-serif italic font-normal">scrambled</span> life.
           </motion.h2>
 
           <motion.p
             {...fadeUp(0.2)}
             className="text-muted-foreground text-lg max-w-2xl mx-auto mb-24 font-normal leading-relaxed"
           >
-            AI answer engines now summarize the web in milliseconds. Readers
-            crave original perspectives, depth, and curated authority more than
-            ever.
+            Most people don't fail from lack of ambition. They fail because their days are fragmented, habits are left to chance, and tasks pile up without direction. Quest brings calm, deliberate structure to your days.
           </motion.p>
 
-          {/* 3 Platform Cards */}
+          {/* 3 Pillars Cards */}
           <div className="grid md:grid-cols-3 gap-12 md:gap-8 mb-20">
-            {/* ChatGPT */}
+            {/* 1: To-Do Focus */}
             <motion.div
               {...fadeUp(0.3)}
               className="flex flex-col items-center text-center p-6 rounded-2xl liquid-glass border border-border/20"
@@ -360,20 +350,19 @@ export default function MindloopLandingPage() {
               <div className="w-[200px] h-[200px] flex items-center justify-center mb-6">
                 <img
                   src="/icon-chatgpt.png"
-                  alt="ChatGPT"
+                  alt="The Focus To-Do List"
                   className="w-full h-full object-contain"
                 />
               </div>
               <h3 className="font-semibold text-base text-foreground mb-2">
-                ChatGPT
+                The Focus To-Do List
               </h3>
               <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
-                Direct conversational queries demand authoritative synthesis.
-                Stand out as the primary source AI agents reference and recommend.
+                Cut through mental clutter. Capture one-off goals, schedule due dates, and prioritize only what must move forward today.
               </p>
             </motion.div>
 
-            {/* Perplexity */}
+            {/* 2: Habit Engine */}
             <motion.div
               {...fadeUp(0.4)}
               className="flex flex-col items-center text-center p-6 rounded-2xl liquid-glass border border-border/20"
@@ -381,20 +370,19 @@ export default function MindloopLandingPage() {
               <div className="w-[200px] h-[200px] flex items-center justify-center mb-6">
                 <img
                   src="/icon-perplexity.png"
-                  alt="Perplexity"
+                  alt="The Habit Engine"
                   className="w-full h-full object-contain"
                 />
               </div>
               <h3 className="font-semibold text-base text-foreground mb-2">
-                Perplexity
+                The Habit Engine
               </h3>
               <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
-                Answer engines cite depth over SEO fluff. Deliver high-signal
-                content that ranks directly into source footnotes and answer cards.
+                Anchor daily routines that compound over months. Visual streak counters make consistency a non-negotiable personal standard.
               </p>
             </motion.div>
 
-            {/* Google AI */}
+            {/* 3: Real Growth */}
             <motion.div
               {...fadeUp(0.5)}
               className="flex flex-col items-center text-center p-6 rounded-2xl liquid-glass border border-border/20"
@@ -402,16 +390,15 @@ export default function MindloopLandingPage() {
               <div className="w-[200px] h-[200px] flex items-center justify-center mb-6">
                 <img
                   src="/icon-google.png"
-                  alt="Google AI"
+                  alt="Character Evolution"
                   className="w-full h-full object-contain"
                 />
               </div>
               <h3 className="font-semibold text-base text-foreground mb-2">
-                Google AI
+                Tangible Evolution
               </h3>
               <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
-                AI Overviews compress search results into unified answers. Reach
-                audiences who look for verified experts and deep editorial voice.
+                Turn your effort into observable progress. Level up Strength, Intellect, and Discipline as you cross the finish line every evening.
               </p>
             </motion.div>
           </div>
@@ -421,7 +408,7 @@ export default function MindloopLandingPage() {
             {...fadeUp(0.6)}
             className="text-muted-foreground text-sm text-center tracking-wide"
           >
-            If you don't answer the questions, someone else will.
+            If you don't take control of your habits, your habits will take control of you.
           </motion.p>
         </section>
 
@@ -449,8 +436,8 @@ export default function MindloopLandingPage() {
           <div className="max-w-4xl mx-auto">
             {/* Paragraph 1 */}
             <ScrollWordReveal
-              text="We're building a space where curiosity meets clarity — where readers find depth, writers find reach, and every newsletter becomes a conversation worth having."
-              highlightWords={['curiosity', 'meets', 'clarity']}
+              text="We're building a system where daily habits meet relentless consistency — where scattered days turn into order, tasks become personal victories, and every small step compounds toward greatness."
+              highlightWords={['daily', 'habits', 'relentless', 'consistency', 'greatness', 'order']}
               highlightColor="text-foreground"
               baseColor="text-hero-subtitle"
               className="text-2xl md:text-4xl lg:text-5xl font-medium tracking-[-1px] leading-tight"
@@ -458,8 +445,8 @@ export default function MindloopLandingPage() {
 
             {/* Paragraph 2 */}
             <ScrollWordReveal
-              text="A platform where content, community, and insight flow together — with less noise, less friction, and more meaning for everyone involved."
-              highlightWords={['meaning', 'insight', 'clarity']}
+              text="A calm sanctuary for your goals, routines, and ambitions — with zero noise, zero overwhelm, and continuous momentum for who you want to become."
+              highlightWords={['goals', 'routines', 'momentum', 'calm']}
               highlightColor="text-foreground"
               baseColor="text-muted-foreground"
               className="text-xl md:text-2xl lg:text-3xl font-medium mt-10 leading-relaxed"
@@ -469,7 +456,7 @@ export default function MindloopLandingPage() {
 
         {/* ── 5. Solution Section ───────────────────────────────────────────── */}
         <section
-          id="use-cases"
+          id="system"
           className="py-32 md:py-44 border-t border-border/30 max-w-6xl mx-auto px-6"
         >
           {/* Label */}
@@ -478,7 +465,7 @@ export default function MindloopLandingPage() {
             className="text-center mb-4"
           >
             <span className="text-xs tracking-[3px] uppercase text-muted-foreground">
-              SOLUTION
+              THE SYSTEM
             </span>
           </motion.div>
 
@@ -487,9 +474,9 @@ export default function MindloopLandingPage() {
             {...fadeUp(0.2)}
             className="text-4xl md:text-6xl font-medium tracking-tight mb-16 text-center text-foreground leading-tight"
           >
-            The platform for{' '}
-            <span className="font-serif italic font-normal">meaningful</span>{' '}
-            content
+            The framework for{' '}
+            <span className="font-serif italic font-normal">consistent</span>{' '}
+            achievement
           </motion.h2>
 
           {/* Video (aspect 3/1) */}
@@ -514,11 +501,10 @@ export default function MindloopLandingPage() {
               className="p-6 rounded-xl border border-border/30 liquid-glass"
             >
               <h3 className="font-semibold text-base text-foreground mb-2">
-                Curated Feed
+                Focused Quests
               </h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Hand-selected perspectives and high-signal newsletters delivered
-                directly to your feed without algorithmic churn or engagement bait.
+                Streamlined to-do management engineered for follow-through. Set attributes, assign difficulties, and conquer tasks one by one.
               </p>
             </motion.div>
 
@@ -527,11 +513,10 @@ export default function MindloopLandingPage() {
               className="p-6 rounded-xl border border-border/30 liquid-glass"
             >
               <h3 className="font-semibold text-base text-foreground mb-2">
-                Writer Tools
+                Streak Discipline
               </h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Distraction-free publishing, deep typography controls, and native
-                subscriber relationships that belong strictly to you.
+                Daily repeating routines that reset at midnight. Watch your streaks climb as showing up becomes second nature.
               </p>
             </motion.div>
 
@@ -540,11 +525,10 @@ export default function MindloopLandingPage() {
               className="p-6 rounded-xl border border-border/30 liquid-glass"
             >
               <h3 className="font-semibold text-base text-foreground mb-2">
-                Community
+                AI Habit Coach
               </h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Private reader discourse, annotated essays, and intelligent
-                roundtables that elevate the ideas within every issue.
+                Stuck or overwhelmed? Answer a single intake form and receive tailored, achievable quest suggestions tailored to your routine.
               </p>
             </motion.div>
 
@@ -553,11 +537,10 @@ export default function MindloopLandingPage() {
               className="p-6 rounded-xl border border-border/30 liquid-glass"
             >
               <h3 className="font-semibold text-base text-foreground mb-2">
-                Distribution
+                RPG Progression
               </h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Syndication across modern AI answer engines, federated web feeds,
-                and private member channels with instant deliverability.
+                Earn gold, collect cards, and raise companions with every completed task. Make self-improvement genuinely thrilling.
               </p>
             </motion.div>
           </div>
@@ -585,7 +568,7 @@ export default function MindloopLandingPage() {
               className="text-4xl md:text-6xl font-medium mb-4 text-foreground tracking-tight"
             >
               <span className="font-serif italic font-normal">
-                Start Your Journey
+                Begin Your Quest Today
               </span>
             </motion.h2>
 
@@ -593,8 +576,7 @@ export default function MindloopLandingPage() {
               {...fadeUp(0.3)}
               className="text-muted-foreground text-lg mb-8 max-w-xl mx-auto"
             >
-              Join the community shaping the future of meaningful content and
-              thought. Free to read, empowering to write.
+              Bring order to your scrambled days. Stay consistent, build powerful habits, and unlock your true potential in life.
             </motion.p>
 
             <motion.div
@@ -602,16 +584,16 @@ export default function MindloopLandingPage() {
               className="flex flex-wrap items-center justify-center gap-4"
             >
               <Link
-                href="/login"
+                href="/signup"
                 className="bg-foreground text-background font-medium rounded-lg px-8 py-3.5 hover:bg-foreground/90 transition-colors text-sm"
               >
-                Subscribe Now
+                Start Your Quest
               </Link>
               <Link
-                href="/app"
+                href="/login"
                 className="liquid-glass rounded-lg px-8 py-3.5 text-foreground font-medium hover:bg-white/5 transition-colors border border-white/20 text-sm"
               >
-                Start Writing
+                Sign In
               </Link>
             </motion.div>
           </div>
@@ -621,7 +603,7 @@ export default function MindloopLandingPage() {
       {/* ── 7. Footer ──────────────────────────────────────────────────────── */}
       <footer className="py-12 px-8 md:px-28 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-muted-foreground text-sm">
-          © 2026 Mindloop. All rights reserved.
+          © 2026 Quest. All rights reserved.
         </p>
         <div className="flex items-center gap-6 text-muted-foreground text-sm">
           <a href="#" className="hover:text-foreground transition-colors">

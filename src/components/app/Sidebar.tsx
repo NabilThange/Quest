@@ -100,7 +100,7 @@ export function Sidebar({ profile }: SidebarProps) {
         <div className="p-6 border-b border-border">
           <Link href="/app" className="flex items-center gap-2">
             <Sword className="w-6 h-6 text-brand-cyan" />
-            <span className="font-bold text-lg text-brand-cyan">Life RPG</span>
+            <span className="font-bold text-lg text-brand-cyan">Quest</span>
           </Link>
         </div>
 
@@ -200,7 +200,7 @@ export function Sidebar({ profile }: SidebarProps) {
         {/* Center: Brand title */}
         <Link href="/app" className="flex items-center gap-1.5">
           <Sword className="w-4 h-4 text-brand-cyan" />
-          <span className="font-bold text-sm text-brand-cyan tracking-tight">Life RPG</span>
+          <span className="font-bold text-sm text-brand-cyan tracking-tight">Quest</span>
         </Link>
 
         {/* Right: Currency badge & Menu trigger */}
